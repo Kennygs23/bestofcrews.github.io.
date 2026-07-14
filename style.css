@@ -1,216 +1,138 @@
-/* Industrial, Rugged Design Tokens */
-:root {
-    --bg-dark: #121212;
-    --panel-bg: #1e1e1e;
-    --accent-orange: #f39c12; /* Construction high-vis energy */
-    --border-color: #333333;
-    --text-main: #e0e0e0;
-    --text-muted: #888888;
+/* ==========================================================================
+   🚧 CREW GATE (Login Portal Overlay)
+   ========================================================================== */
+
+/* Utility class to hide/show app states */
+.hidden {
+    display: none !important;
 }
 
-* {
-    box-sizing: border-box;
-    margin: 0;
-    padding: 0;
-    font-family: 'Courier New', Courier, monospace; /* Clean, blueprint-style tech font */
-}
-
-body {
-    background-color: var(--bg-dark);
-    color: var(--text-main);
-    overflow: hidden; /* Prevent weird browser scrolling, canvas handles it */
-    height: 100vh;
-}
-
-/* Master App Layout */
-.app-container {
-    display: grid;
-    grid-template-columns: 260px 1fr;
-    grid-template-rows: 1fr 50px;
-    height: 100vh;
+.portal-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
     width: 100vw;
-}
-
-/* Tool Box Sidebar */
-.toolbox {
-    background-color: var(--panel-bg);
-    border-right: 2px solid var(--border-color);
-    padding: 20px;
-    display: flex;
-    flex-direction: column;
-    gap: 25px;
-}
-
-.toolbox-header h3 {
-    color: var(--accent-orange);
-    border-bottom: 2px solid var(--accent-orange);
-    padding-bottom: 10px;
-    font-size: 1.2rem;
-}
-
-.toolbox-section h4 {
-    font-size: 0.9rem;
-    color: var(--text-muted);
-    margin-bottom: 10px;
-    text-transform: uppercase;
-}
-
-.tool-btn {
-    display: block;
-    width: 100%;
-    background: #2a2a2a;
-    color: var(--text-main);
-    border: 1px solid var(--border-color);
-    padding: 10px;
-    margin-bottom: 8px;
-    text-align: left;
-    cursor: pointer;
-    transition: all 0.2s ease;
-}
-
-.tool-btn:hover {
-    background: var(--accent-orange);
-    color: #000;
-    font-weight: bold;
-}
-
-/* Spatial Grid Canvas */
-.spatial-canvas {
-    background: radial-gradient(circle, #222 1px, transparent 1px);
-    background-size: 20px 20px; /* Blueprint grid effect */
-    background-color: #151515;
-    padding: 20px;
-    display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
-    grid-auto-rows: minmax(150px, auto);
-    gap: 20px;
-    overflow-y: auto;
-}
-
-/* Adjustable/Draggable Cards */
-.canvas-card {
-    background: var(--panel-bg);
-    border: 1px solid var(--border-color);
-    border-radius: 4px;
-    display: flex;
-    flex-direction: column;
-    box-shadow: 0 4px 10px rgba(0,0,0,0.5);
-}
-
-.card-header {
-    background: #252525;
-    padding: 8px 12px;
-    font-size: 0.85rem;
-    font-weight: bold;
-    border-bottom: 1px solid var(--border-color);
-    color: var(--accent-orange);
-}
-
-.card-body {
-    padding: 15px;
-    font-size: 0.9rem;
-    line-height: 1.4;
-    flex-grow: 1;
-}
-
-.photo-placeholder {
+    height: 100vh;
+    background-color: rgba(10, 10, 10, 0.95); /* Deep backdrop */
     display: flex;
     align-items: center;
     justify-content: center;
-    color: var(--text-muted);
-    border: 2px dashed #333;
-    margin: 10px;
+    z-index: 9999; /* Ensure it stays on top of everything */
 }
 
-/* The Breakroom Dock Layout */
-.breakroom {
-    grid-column: span 2;
-    background-color: #0d0d0d;
-    border-top: 2px solid var(--border-color);
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    padding: 0 15px;
-    font-size: 0.85rem;
-    overflow: hidden;
-    gap: 15px;
+.portal-card {
+    background: var(--panel-bg);
+    border: 2px solid var(--accent-orange);
+    border-radius: 4px;
+    width: 100%;
+    max-width: 400px;
+    padding: 30px;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.7), 
+                0 0 15px rgba(243, 156, 18, 0.1);
 }
 
-.breakroom-label {
+.portal-header {
+    text-align: center;
+    margin-bottom: 25px;
+    border-bottom: 1px dashed var(--border-color);
+    padding-bottom: 15px;
+}
+
+.portal-header h2 {
     color: var(--accent-orange);
-    font-weight: bold;
-    white-space: nowrap;
+    font-size: 1.3rem;
+    margin-bottom: 5px;
+    letter-spacing: 1px;
 }
 
-/* Container to hide any chat overflow while letting the ticker slide */
-.breakroom-stream-container {
-    flex-grow: 1;
-    overflow: hidden;
-    position: relative;
-    display: flex;
-    align-items: center;
+.portal-header p {
+    font-size: 0.8rem;
+    color: var(--text-muted);
+    text-transform: uppercase;
 }
 
-/* The horizontal ticker container */
-.breakroom-stream {
+/* Input Fields & Forms */
+.portal-body form {
     display: flex;
-    align-items: center;
-    white-space: nowrap;
-    gap: 10px;
-    transition: transform 0.3s ease; /* Smooth transition when new messages are added */
+    flex-direction: column;
+    gap: 20px;
 }
 
-/* Clean, industrial input box & send button */
-.breakroom-form {
+.input-group {
     display: flex;
+    flex-direction: column;
     gap: 8px;
-    height: 32px;
-    min-width: 280px;
 }
 
-#chatInput {
-    background: #1a1a1a;
+.input-group label {
+    font-size: 0.75rem;
+    color: var(--text-muted);
+    font-weight: bold;
+}
+
+.input-group input {
+    background: #181818;
     border: 1px solid var(--border-color);
     color: var(--text-main);
-    padding: 0 10px;
+    padding: 12px;
     font-family: inherit;
-    font-size: 0.85rem;
-    flex-grow: 1;
+    font-size: 0.9rem;
+    border-radius: 2px;
+    transition: all 0.2s ease;
 }
 
-#chatInput:focus {
+.input-group input:focus {
     outline: none;
     border-color: var(--accent-orange);
+    background: #1c1c1c;
 }
 
-.breakroom-form button {
+/* Auth Buttons */
+.portal-btn {
     background: var(--accent-orange);
     color: #000;
     border: none;
+    padding: 14px;
     font-weight: bold;
     font-family: inherit;
-    font-size: 0.8rem;
-    padding: 0 15px;
+    font-size: 0.95rem;
     cursor: pointer;
     transition: background 0.2s ease;
+    margin-top: 10px;
 }
 
-.breakroom-form button:hover {
+.portal-btn:hover {
     background: #e08e0b;
 }
 
-.chat-tag {
-    color: #5dade2;
+/* Portal Footer & Interactive Messaging */
+.portal-footer {
+    margin-top: 20px;
+    text-align: center;
+    font-size: 0.8rem;
+}
+
+.portal-footer a {
+    color: var(--accent-orange);
+    text-decoration: none;
     font-weight: bold;
 }
 
-.divider {
-    color: #444;
-    margin: 0 10px;
+.portal-footer a:hover {
+    text-decoration: underline;
 }
 
-/* Simple ticker animation for messing around comments */
-@keyframes ticker {
-    0% { transform: translate3d(0, 0, 0); }
-    100% { transform: translate3d(-50%, 0, 0); }
+.feedback-msg {
+    margin-top: 15px;
+    font-size: 0.8rem;
+    font-weight: bold;
+    min-height: 1.2rem;
+}
+
+.feedback-msg.error {
+    color: #ff4d4d;
+}
+
+.feedback-msg.success {
+    color: #2ecc71;
 }
