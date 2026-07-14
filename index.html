@@ -1,1 +1,65 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Best Of Crews | Canvas</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
 
+    <div class="app-container">
+        
+        <!-- TOOL BOX (Sidebar Utility) -->
+        <aside class="toolbox">
+            <div class="toolbox-header">
+                <h3>🛠️ TOOL BOX</h3>
+            </div>
+            <div class="toolbox-section">
+                <h4>Add to Canvas</h4>
+                <button class="tool-btn" onclick="addModule('photo')">+ Photo Card</button>
+                <button class="tool-btn" onclick="addModule('notes')">+ Crew Note</button>
+                <button class="tool-btn" onclick="addModule('build')">+ Build Log</button>
+            </div>
+            <div class="toolbox-section">
+                <h4>Quick Utilities</h4>
+                <button class="tool-btn utility">Calc / Scale</button>
+                <button class="tool-btn utility">Material Checklist</button>
+            </div>
+        </aside>
+
+        <!-- MAIN SPATIAL CANVAS -->
+        <main class="spatial-canvas" id="canvas">
+            <!-- Modular cards will be dynamically injected or dragged here -->
+            <div class="canvas-card" style="grid-column: span 2; grid-row: span 2;">
+                <div class="card-header">🚀 Active Project: Main Stage Setup</div>
+                <div class="card-body">
+                    <p>Framing out the main structural truss today. Check dimensions in the tool box reference sheet.</p>
+                </div>
+            </div>
+            
+            <div class="canvas-card">
+                <div class="card-header">📸 Load-In Shot</div>
+                <div class="card-body photo-placeholder">
+                    [ Crew Photo Upload ]
+                </div>
+            </div>
+        </main>
+
+        <!-- THE BREAKROOM (Footer / Banter Zone) -->
+        <footer class="breakroom">
+            <div class="breakroom-label">☕ THE BREAKROOM:</div>
+            <div class="breakroom-stream">
+                <span class="chat-tag">[Erick]:</span> Who left the drill batteries dead on the charger? 
+                <span class="divider">|</span>
+                <span class="chat-tag">[Ken]:</span> Throw that new hip-hop playlist on the shop speaker.
+                <span class="divider">|</span>
+                <span class="chat-tag">[Crew]:</span> T-minus 2 days until load-out 🍻
+            </div>
+        </footer>
+
+    </div>
+
+    <script src="app.js"></script>
+</body>
+</html>
