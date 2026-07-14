@@ -7,7 +7,7 @@ const usernameInput = document.getElementById('username');
 const passwordInput = document.getElementById('password');
 const submitBtn = document.getElementById('submitBtn');
 const toggleModeLink = document.getElementById('toggleMode');
-const toggleStatusLabel = document.getElementById('toggleStatusLabel');
+const toggleText = document.getElementById('toggleText');
 const portalFeedback = document.getElementById('portalFeedback');
 const headerTitle = document.querySelector('.portal-header h2');
 
@@ -16,7 +16,7 @@ if (localStorage.getItem('activeCrewMember')) {
     window.location.href = 'index.html';
 }
 
-// Toggle between Login and Register Mode (Crash-free)
+// Toggle between Login and Register Mode
 toggleModeLink.addEventListener('click', (e) => {
     e.preventDefault();
     isRegisterMode = !isRegisterMode;
@@ -28,19 +28,20 @@ toggleModeLink.addEventListener('click', (e) => {
     if (isRegisterMode) {
         headerTitle.textContent = '🚧 REGISTER NEW CREW';
         submitBtn.textContent = 'CREATE ACCOUNT';
-        toggleStatusLabel.textContent = 'Already in the crew?';
-        toggleModeLink.textContent = 'Sign In';
+        toggleText.innerHTML = 'Already in the crew? <a href="#" id="toggleMode">Sign In</a>';
     } else {
         headerTitle.textContent = '⚠️ CREW ACCESS REQUIRED';
         submitBtn.textContent = 'AUTHENTICATE';
-        toggleStatusLabel.textContent = 'New to the crew?';
-        toggleModeLink.textContent = 'Create an Account';
+        toggleText.innerHTML = 'New to the crew? <a href="#" id="toggleMode">Create an Account</a>';
     }
+
+    // Re-bind click event to the newly rendered anchor link
+    document.getElementById('toggleMode').addEventListener('click', arguments.callee);
 });
 
 // Form Submission (Login/Register)
 portalForm.addEventListener('submit', (e) => {
-    e.preventDefault();
+    e.preventDefault(); // <-- Stops the page from refreshing and erasing text!
     
     const username = usernameInput.value.trim();
     const password = passwordInput.value;
@@ -55,7 +56,7 @@ portalForm.addEventListener('submit', (e) => {
         if (crewDB[username.toLowerCase()]) {
             showFeedback("Crew Handle already taken!", "error");
         } else {
-            // Save new user to LocalStorage
+            // Save new user to LocalStorage database
             crewDB[username.toLowerCase()] = { username: username, password: password };
             localStorage.setItem('crewDatabase', JSON.stringify(crewDB));
             showFeedback("Registration successful! Authenticating...", "success");
@@ -80,7 +81,7 @@ portalForm.addEventListener('submit', (e) => {
 
 function loginUser(username) {
     localStorage.setItem('activeCrewMember', username);
-    window.location.href = 'index.html';
+    window.location.href = 'index.html'; // Direct route to the workspace dashboard
 }
 
 function showFeedback(message, type) {
