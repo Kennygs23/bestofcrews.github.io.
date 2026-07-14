@@ -1,83 +1,89 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Best Of Crews | Canvas</title>
+// --- CREW GATE AUTHENTICATION SYSTEM ---
+let isRegisterMode = false;
+
+// DOM Elements
+const portalForm = document.getElementById('portalForm');
+const usernameInput = document.getElementById('username');
+const passwordInput = document.getElementById('password');
+const submitBtn = document.getElementById('submitBtn');
+const toggleModeLink = document.getElementById('toggleMode');
+const toggleStatusLabel = document.getElementById('toggleStatusLabel');
+const portalFeedback = document.getElementById('portalFeedback');
+const headerTitle = document.querySelector('.portal-header h2');
+
+// Security Check: If already logged in, skip login page entirely
+if (localStorage.getItem('activeCrewMember')) {
+    window.location.href = 'index.html';
+}
+
+// Toggle between Login and Register Mode (Crash-free)
+toggleModeLink.addEventListener('click', (e) => {
+    e.preventDefault();
+    isRegisterMode = !isRegisterMode;
     
-    <!-- Security Check: If not logged in, immediately redirect to login.html -->
-    <script>
-        if (!localStorage.getItem('activeCrewMember')) {
-            window.location.href = 'login.html';
+    // Clear any previous feedback messages
+    portalFeedback.textContent = ''; 
+    portalFeedback.className = 'feedback-msg';
+
+    if (isRegisterMode) {
+        headerTitle.textContent = '🚧 REGISTER NEW CREW';
+        submitBtn.textContent = 'CREATE ACCOUNT';
+        toggleStatusLabel.textContent = 'Already in the crew?';
+        toggleModeLink.textContent = 'Sign In';
+    } else {
+        headerTitle.textContent = '⚠️ CREW ACCESS REQUIRED';
+        submitBtn.textContent = 'AUTHENTICATE';
+        toggleStatusLabel.textContent = 'New to the crew?';
+        toggleModeLink.textContent = 'Create an Account';
+    }
+});
+
+// Form Submission (Login/Register)
+portalForm.addEventListener('submit', (e) => {
+    e.preventDefault();
+    
+    const username = usernameInput.value.trim();
+    const password = passwordInput.value;
+
+    if (!username || !password) return;
+
+    // Fetch existing database from LocalStorage
+    const crewDB = JSON.parse(localStorage.getItem('crewDatabase')) || {};
+
+    if (isRegisterMode) {
+        // Registration Logic
+        if (crewDB[username.toLowerCase()]) {
+            showFeedback("Crew Handle already taken!", "error");
+        } else {
+            // Save new user to LocalStorage
+            crewDB[username.toLowerCase()] = { username: username, password: password };
+            localStorage.setItem('crewDatabase', JSON.stringify(crewDB));
+            showFeedback("Registration successful! Authenticating...", "success");
+            
+            setTimeout(() => {
+                loginUser(username);
+            }, 1000);
         }
-    </script>
+    } else {
+        // Login Logic
+        const account = crewDB[username.toLowerCase()];
+        if (account && account.password === password) {
+            showFeedback("Access Granted. Loading workspace...", "success");
+            setTimeout(() => {
+                loginUser(account.username);
+            }, 1000);
+        } else {
+            showFeedback("Access Denied. Check handle or passcode.", "error");
+        }
+    }
+});
 
-    <link rel="stylesheet" href="style.css">
-</head>
-<body>
+function loginUser(username) {
+    localStorage.setItem('activeCrewMember', username);
+    window.location.href = 'index.html';
+}
 
-    <!-- MAIN APP CONTAINER (No more .hidden class required on load!) -->
-    <div class="app-container" id="app">
-        
-        <!-- TOOL BOX (Sidebar Utility) -->
-        <aside class="toolbox">
-            <div class="toolbox-header">
-                <h3>🛠️ TOOL BOX</h3>
-            </div>
-            <div class="toolbox-section">
-                <h4>Add to Canvas</h4>
-                <button class="tool-btn" onclick="addModule('photo')">+ Photo Card</button>
-                <button class="tool-btn" onclick="addModule('notes')">+ Crew Note</button>
-                <button class="tool-btn" onclick="addModule('build')">+ Build Log</button>
-            </div>
-            <div class="toolbox-section">
-                <h4>Quick Utilities</h4>
-                <button class="tool-btn utility">Calc / Scale</button>
-                <button class="tool-btn utility">Material Checklist</button>
-            </div>
-            <!-- Dynamic Sign Out Button -->
-            <div class="toolbox-section" style="margin-top: auto; padding-top: 20px;">
-                <button class="tool-btn" onclick="logout()" style="border-color: #ff4d4d; color: #ff4d4d; background: rgba(255,77,77,0.05);">🔓 Sign Out</button>
-            </div>
-        </aside>
-
-        <!-- MAIN SPATIAL CANVAS -->
-        <main class="spatial-canvas" id="canvas">
-            <div class="canvas-card" style="grid-column: span 2; grid-row: span 2;">
-                <div class="card-header">🚀 Active Project: What do you have in mind?</div>
-                <div class="card-body">
-                    <p>Canvas section, Business and shop objectives</p>
-                </div>
-            </div>
-            
-            <div class="canvas-card">
-                <div class="card-header">📸 Load-In Shot</div>
-                <div class="card-body photo-placeholder">
-                    [ Crew Photo Upload ]
-                </div>
-            </div>
-        </main>
-
-       <!-- THE BREAKROOM (Footer / Interactive Banter Zone) -->
-        <footer class="breakroom">
-            <div class="breakroom-label">☕ THE BREAKROOM:</div>
-            
-            <div class="breakroom-stream-container">
-                <div class="breakroom-stream" id="chatStream">
-                    <span class="chat-tag">[Social]:</span> Banter? Whats the vibes? <span class="divider">|</span>
-                    <span class="chat-tag">[Ken]:</span> Website Loading... <span class="divider">|</span>
-                    <span class="chat-tag">[Crew]:</span> Comment Section      <span class="divider">|</span>
-                </div>
-            </div>
-
-            <form class="breakroom-form" id="chatForm">
-                <input type="text" id="chatInput" placeholder="Type banter here..." autocomplete="off" required>
-                <button type="submit">SEND</button>
-            </form>
-        </footer>
-
-    </div>
-
-    <script src="app.js"></script>
-</body>
-</html>
+function showFeedback(message, type) {
+    portalFeedback.textContent = message;
+    portalFeedback.className = `feedback-msg ${type}`;
+}
