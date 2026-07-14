@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Best Of Crews | Gate</title>
+
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+    <!-- =========================
+         CREW ACCESS PORTAL
+    ========================== -->
+    <div id="login-portal" class="portal-overlay">
+
+        <div class="portal-card">
+
+            <!-- Header -->
+            <div class="portal-header">
+
+                <!-- Optional Logo -->
+                <!-- Replace with your logo if desired -->
+                <img
+                    src="images/logo.png"
+                    alt="Best Of Crews Logo"
+                    class="portal-logo"
+                    onerror="this.style.display='none';">
+
+                <h2>⚠️ CREW ACCESS REQUIRED</h2>
+                <p>Authorized Personnel Only</p>
+
+            </div>
+
+            <!-- Body -->
+            <div class="portal-body">
+
+                <form id="portalForm">
+
+                    <div class="input-group">
+                        <label for="username">CREW NAME / HANDLE</label>
+
+                        <input
+                            type="text"
+                            id="username"
+                            name="username"
+                            placeholder="e.g., Ken_G"
+                            required
+                            autocomplete="username"
+                            autocapitalize="off"
+                            autocorrect="off"
+                            spellcheck="false">
+                    </div>
+
+                    <div class="input-group">
+                        <label for="password">ACCESS PASSCODE</label>
+
+                        <input
+                            type="password"
+                            id="password"
+                            name="password"
+                            placeholder="••••••••"
+                            required
+                            autocomplete="current-password">
+                    </div>
+
+                    <button
+                        type="submit"
+                        id="submitBtn"
+                        class="portal-btn">
+                        AUTHENTICATE
+                    </button>
+
+                </form>
+
+            </div>
+
+            <!-- Footer -->
+            <div class="portal-footer">
+
+                <p id="toggleText">
+                    New to the crew?
+                    <a href="#" id="toggleMode">
+                        Create an Account
+                    </a>
+                </p>
+
+                <div
+                    id="portalFeedback"
+                    class="feedback-msg"
+                    aria-live="polite">
+                </div>
+
+            </div>
+
+        </div>
+
+    </div>
+
+    <!-- Gate Logic -->
+    <script src="gate.js"></script>
+
+</body>
+</html>
