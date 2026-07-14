@@ -3,84 +3,81 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Best Of Crews | Gate</title>
+    <title>Best Of Crews | Canvas</title>
+    
+    <!-- Security Check: If not logged in, immediately redirect back to login.html -->
+    <script>
+        if (!localStorage.getItem('activeCrewMember')) {
+            window.location.href = 'login.html';
+        }
+    </script>
+
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
 
-    <!-- =========================
-         CREW ACCESS PORTAL
-    ========================== -->
-    <div id="login-portal" class="portal-overlay">
-        <div class="portal-card">
-
-            <!-- Header -->
-            <div class="portal-header">
-                <img
-                    src="images/logo.png"
-                    alt="Best Of Crews Logo"
-                    class="portal-logo"
-                    onerror="this.style.display='none';">
-
-                <h2>⚠️ CREW ACCESS REQUIRED</h2>
-                <p>Authorized Personnel Only</p>
+    <!-- MAIN APP CONTAINER -->
+    <div class="app-container" id="app">
+        
+        <!-- TOOL BOX (Sidebar Utility) -->
+        <aside class="toolbox">
+            <div class="toolbox-header">
+                <h3>🛠️ TOOL BOX</h3>
             </div>
-
-            <!-- Body -->
-            <div class="portal-body">
-                <form id="portalForm">
-                    <div class="input-group">
-                        <label for="username">CREW NAME / HANDLE</label>
-                        <input
-                            type="text"
-                            id="username"
-                            name="username"
-                            placeholder="e.g., Ken_G"
-                            required
-                            autocomplete="username"
-                            autocapitalize="off"
-                            autocorrect="off"
-                            spellcheck="false">
-                    </div>
-
-                    <div class="input-group">
-                        <label for="password">ACCESS PASSCODE</label>
-                        <input
-                            type="password"
-                            id="password"
-                            name="password"
-                            placeholder="••••••••"
-                            required
-                            autocomplete="current-password">
-                    </div>
-
-                    <button
-                        type="submit"
-                        id="submitBtn"
-                        class="portal-btn">
-                        AUTHENTICATE
-                    </button>
-                </form>
+            <div class="toolbox-section">
+                <h4>Add to Canvas</h4>
+                <button class="tool-btn" onclick="addModule('photo')">+ Photo Card</button>
+                <button class="tool-btn" onclick="addModule('notes')">+ Crew Note</button>
+                <button class="tool-btn" onclick="addModule('build')">+ Build Log</button>
             </div>
+            <div class="toolbox-section">
+                <h4>Quick Utilities</h4>
+                <button class="tool-btn utility">Calc / Scale</button>
+                <button class="tool-btn utility">Material Checklist</button>
+            </div>
+            <!-- Dynamic Sign Out Button -->
+            <div class="toolbox-section" style="margin-top: auto; padding-top: 20px;">
+                <button class="tool-btn" onclick="logout()" style="border-color: #ff4d4d; color: #ff4d4d; background: rgba(255,77,77,0.05);">🔓 Sign Out</button>
+            </div>
+        </aside>
 
-            <!-- Footer -->
-            <div class="portal-footer">
-                <p id="toggleText">
-                    <span id="toggleStatusLabel">New to the crew?</span>
-                    <a href="#" id="toggleMode">Create an Account</a>
-                </p>
+        <!-- MAIN SPATIAL CANVAS -->
+        <main class="spatial-canvas" id="canvas">
+            <div class="canvas-card" style="grid-column: span 2; grid-row: span 2;">
+                <div class="card-header">🚀 Active Project: What do you have in mind?</div>
+                <div class="card-body">
+                    <p>Canvas section, Business and shop objectives</p>
+                </div>
+            </div>
+            
+            <div class="canvas-card">
+                <div class="card-header">📸 Load-In Shot</div>
+                <div class="card-body photo-placeholder">
+                    [ Crew Photo Upload ]
+                </div>
+            </div>
+        </main>
 
-                <div
-                    id="portalFeedback"
-                    class="feedback-msg"
-                    aria-live="polite">
+       <!-- THE BREAKROOM (Footer / Interactive Banter Zone) -->
+        <footer class="breakroom">
+            <div class="breakroom-label">☕ THE BREAKROOM:</div>
+            
+            <div class="breakroom-stream-container">
+                <div class="breakroom-stream" id="chatStream">
+                    <span class="chat-tag">[Social]:</span> Banter? Whats the vibes? <span class="divider">|</span>
+                    <span class="chat-tag">[Ken]:</span> Website Loading... <span class="divider">|</span>
+                    <span class="chat-tag">[Crew]:</span> Comment Section      <span class="divider">|</span>
                 </div>
             </div>
 
-        </div>
+            <form class="breakroom-form" id="chatForm">
+                <input type="text" id="chatInput" placeholder="Type banter here..." autocomplete="off" required>
+                <button type="submit">SEND</button>
+            </form>
+        </footer>
+
     </div>
 
-    <!-- Gate Logic -->
-    <script src="gate.js"></script>
+    <script src="app.js"></script>
 </body>
 </html>
