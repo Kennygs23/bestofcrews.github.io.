@@ -25,15 +25,15 @@
     <div class="max-w-6xl mx-auto flex justify-between items-center">
       <div class="flex items-center space-x-3">
         <span class="text-2xl">⚡</span>
-        <h1 class="text-xl font-bold tracking-wider text-white">BESTOFCREWS.COM <span class="text-orange-500 font-mono text-xs border border-orange-500/30 px-2 py-0.5 rounded ml-2">THINK TANK V1.0</span></h1>
+        <h1 class="text-xl font-bold tracking-wider text-white">BESTOFCREWS.COM <span class="text-orange-500 font-mono text-xs border border-orange-500/30 px-2 py-0.5 rounded ml-2">THINK TANK V2.0</span></h1>
       </div>
-      <p class="text-xs text-gray-400 font-mono">SIGNAL PATH: ONLINE</p>
+      <p class="text-xs text-gray-400 font-mono">SIGNAL PATH: HOT</p>
     </div>
   </header>
 
   <main class="max-w-6xl mx-auto px-4 mt-8 grid grid-cols-1 lg:grid-cols-12 gap-8">
     
-    <!-- Left Column: Inputs & Rack -->
+    <!-- Left Column: Inputs & Racks -->
     <div class="lg:col-span-8 space-y-6">
       
       <!-- Input Section -->
@@ -51,7 +51,7 @@
         ></textarea>
       </div>
 
-      <!-- Creative Pack -->
+      <!-- Section 1: Creative Pack -->
       <div class="bg-gray-900 border border-gray-800 rounded-xl p-6 shadow-xl">
         <h2 class="text-xs font-mono uppercase tracking-widest text-orange-400 mb-4 flex items-center gap-2">
           <span class="inline-block w-2.5 h-2.5 rounded-full bg-orange-500 animate-pulse"></span>
@@ -60,7 +60,16 @@
         <div class="grid grid-cols-1 md:grid-cols-2 gap-3" id="creative-rack"></div>
       </div>
 
-      <!-- Effects Pack -->
+      <!-- Section 2: Analytic Pack (NEW!) -->
+      <div class="bg-gray-900 border border-gray-800 rounded-xl p-6 shadow-xl">
+        <h2 class="text-xs font-mono uppercase tracking-widest text-purple-400 mb-4 flex items-center gap-2">
+          <span class="inline-block w-2.5 h-2.5 rounded-full bg-purple-500 animate-pulse"></span>
+          🔬 The Analytic Pack (Diagnostic Utilities)
+        </h2>
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-3" id="analytic-rack"></div>
+      </div>
+
+      <!-- Section 3: Effects Pack -->
       <div class="bg-gray-900 border border-gray-800 rounded-xl p-6 shadow-xl">
         <h2 class="text-xs font-mono uppercase tracking-widest text-blue-400 mb-4 flex items-center gap-2">
           <span class="inline-block w-2.5 h-2.5 rounded-full bg-blue-500 animate-pulse"></span>
@@ -120,6 +129,21 @@
       { id: "metaphorical", name: "The Metaphorical Blueprint", prompt: 'Explain this concept by comparing it entirely to the physical layout, mechanics, and structural stress points of an entirely different system.' }
     ];
 
+    const analyticPack = [
+      { id: "spectral", name: "The Spectral Analyzer", prompt: 'Identify the hidden assumptions or logical blind spots in the context provided that I might be blind to.' },
+      { id: "stress", name: "The Stress Test", prompt: 'Analyze this plan/design and simulate three distinct ways it could completely fail under real-world pressure.' },
+      { id: "pareto", name: "The Pareto Filter", prompt: 'Identify the 20% of variables or actions in this scenario that will drive 80% of the actual results.' },
+      { id: "root", name: "Root Cause Extraction", prompt: "Don't address the surface symptoms. Trace this issue backward to its foundational root cause." },
+      { id: "firstprinciples", name: "First Principles Stripper", prompt: 'Deconstruct this concept entirely down to its most basic, undeniable physical or logical truths—remove all industry jargon and assumptions.' },
+      { id: "devils", name: "The Devil's Advocate", prompt: "Take the exact opposite stance of my implied goal. Critique my strategy aggressively from an outsider's perspective." },
+      { id: "horizon", name: "The Horizon Scanner", prompt: 'What is the secondary, long-term ripple effect of executing this solution two to three steps down the line?' },
+      { id: "radar", name: "The Blindspot Radar", prompt: "What is the single most important question about this scenario that I haven't thought to ask you yet?" },
+      { id: "friction", name: "The Friction Locator", prompt: 'Where is the hidden bottleneck, manual drag, or efficiency leak in this workflow/system?' },
+      { id: "calibration", name: "The Calibration Meter", prompt: 'Rate the viability of this approach on a scale of 1-10, justify the score, and tell me exactly what it takes to make it a 10.' },
+      { id: "triangulation", name: "The Triangulation Engine", prompt: 'Identify three completely conflicting perspectives or schools of thought regarding this problem. Show how each perspective would solve it, and then synthesize a hybrid path that extracts the best elements of all three.' },
+      { id: "hindsight", name: "The Hindsight Simulator", prompt: 'Describe the post-mortem report from the future: what went wrong, what warning signs did we ignore in the planning phase, and how do we prevent it?' }
+    ];
+
     const effectsPack = [
       { id: "compressor", name: "The Parallel Compressor", prompt: 'Condense your entire response into a hard-hitting, single-sentence takeaway followed by ultra-dense bullet points. Max 150 words.' },
       { id: "desser", name: "The De-Esser (No Fluff)", prompt: 'Strip away all conversational introductory phrases, filler words, concluding summaries, and AI politeness. Start directly with the answer.' },
@@ -135,14 +159,16 @@
     ];
 
     let activeCreativeId = null;
+    let activeAnalyticId = null;
     let activeEffectId = null;
 
     function init() {
+      // Creative Rack
       const creativeContainer = document.getElementById("creative-rack");
       creativePack.forEach(pedal => {
         const btn = document.createElement("button");
         btn.id = `creative-${pedal.id}`;
-        btn.className = "flex flex-col items-start text-left p-3 rounded-lg border border-gray-850 bg-gray-950/60 hover:bg-gray-800/40 transition-all duration-200 cursor-pointer focus:outline-none";
+        btn.className = "flex flex-col items-start text-left p-3 rounded-lg border border-gray-850 bg-gray-950/60 hover:bg-gray-800/40 transition-all duration-200 cursor-pointer focus:outline-none w-full";
         btn.onclick = () => toggleCreative(pedal.id);
         btn.innerHTML = `
           <div class="flex items-center gap-2">
@@ -153,11 +179,28 @@
         creativeContainer.appendChild(btn);
       });
 
+      // Analytic Rack
+      const analyticContainer = document.getElementById("analytic-rack");
+      analyticPack.forEach(pedal => {
+        const btn = document.createElement("button");
+        btn.id = `analytic-${pedal.id}`;
+        btn.className = "flex flex-col items-start text-left p-3 rounded-lg border border-gray-850 bg-gray-950/60 hover:bg-gray-800/40 transition-all duration-200 cursor-pointer focus:outline-none w-full";
+        btn.onclick = () => toggleAnalytic(pedal.id);
+        btn.innerHTML = `
+          <div class="flex items-center gap-2">
+            <span class="indicator w-2 h-2 rounded-full bg-gray-700 transition-colors"></span>
+            <span class="font-mono text-xs font-bold text-gray-200">${pedal.name}</span>
+          </div>
+        `;
+        analyticContainer.appendChild(btn);
+      });
+
+      // Effects Rack
       const effectsContainer = document.getElementById("effects-rack");
       effectsPack.forEach(pedal => {
         const btn = document.createElement("button");
         btn.id = `effect-${pedal.id}`;
-        btn.className = "flex flex-col items-start text-left p-3 rounded-lg border border-gray-855 bg-gray-950/60 hover:bg-gray-800/40 transition-all duration-200 cursor-pointer focus:outline-none";
+        btn.className = "flex flex-col items-start text-left p-3 rounded-lg border border-gray-850 bg-gray-950/60 hover:bg-gray-800/40 transition-all duration-200 cursor-pointer focus:outline-none w-full";
         btn.onclick = () => toggleEffect(pedal.id);
         btn.innerHTML = `
           <div class="flex items-center gap-2">
@@ -189,6 +232,24 @@
       updateOutput();
     }
 
+    function toggleAnalytic(id) {
+      activeAnalyticId = (activeAnalyticId === id) ? null : id;
+      analyticPack.forEach(pedal => {
+        const el = document.getElementById(`analytic-${pedal.id}`);
+        const indicator = el.querySelector(".indicator");
+        if (pedal.id === activeAnalyticId) {
+          el.classList.add("border-purple-500/80", "bg-purple-950/20");
+          indicator.classList.remove("bg-gray-700");
+          indicator.classList.add("bg-purple-500");
+        } else {
+          el.classList.remove("border-purple-500/80", "bg-purple-950/20");
+          indicator.classList.remove("bg-purple-500");
+          indicator.classList.add("bg-gray-700");
+        }
+      });
+      updateOutput();
+    }
+
     function toggleEffect(id) {
       activeEffectId = (activeEffectId === id) ? null : id;
       effectsPack.forEach(pedal => {
@@ -210,9 +271,11 @@
     function buildPrompt() {
       const rawText = document.getElementById("raw-input").value.trim();
       const creative = creativePack.find(p => p.id === activeCreativeId);
+      const analytic = analyticPack.find(p => p.id === activeAnalyticId);
       const effect = effectsPack.find(p => p.id === activeEffectId);
       let parts = [];
       if (creative) parts.push(creative.prompt);
+      if (analytic) parts.push(analytic.prompt);
       if (rawText) parts.push(rawText);
       if (effect) parts.push(effect.prompt);
       return parts.join("\n\n");
@@ -223,11 +286,15 @@
       document.getElementById("char-count").innerText = `${rawText.length} chars`;
       const previewContainer = document.getElementById("output-preview");
       const creative = creativePack.find(p => p.id === activeCreativeId);
+      const analytic = analyticPack.find(p => p.id === activeAnalyticId);
       const effect = effectsPack.find(p => p.id === activeEffectId);
 
       let html = "";
       if (creative) {
-        html += `<div class="p-2 bg-orange-950/20 border-l-2 border-orange-500 rounded"><span class="text-orange-400 font-bold block mb-1 text-[10px]">[UTILITY: ${creative.name.toUpperCase()}]</span>${creative.prompt}</div>`;
+        html += `<div class="p-2 bg-orange-950/20 border-l-2 border-orange-500 rounded"><span class="text-orange-400 font-bold block mb-1 text-[10px]">[CREATIVE: ${creative.name.toUpperCase()}]</span>${creative.prompt}</div>`;
+      }
+      if (analytic) {
+        html += `<div class="p-2 bg-purple-950/20 border-l-2 border-purple-500 rounded"><span class="text-purple-400 font-bold block mb-1 text-[10px]">[ANALYTIC: ${analytic.name.toUpperCase()}]</span>${analytic.prompt}</div>`;
       }
       if (rawText.trim()) {
         html += `<div class="p-2 bg-gray-900/40 border-l-2 border-gray-600 rounded"><span class="text-gray-400 font-bold block mb-1 text-[10px]">[INPUT CONCEPT]</span>${rawText}</div>`;
@@ -243,9 +310,14 @@
     function clearAll() {
       document.getElementById("raw-input").value = "";
       activeCreativeId = null;
+      activeAnalyticId = null;
       activeEffectId = null;
       document.querySelectorAll("[id^='creative-']").forEach(el => {
         el.classList.remove("border-orange-500/80", "bg-orange-950/20");
+        el.querySelector(".indicator").className = "indicator w-2 h-2 rounded-full bg-gray-700 transition-colors";
+      });
+      document.querySelectorAll("[id^='analytic-']").forEach(el => {
+        el.classList.remove("border-purple-500/80", "bg-purple-950/20");
         el.querySelector(".indicator").className = "indicator w-2 h-2 rounded-full bg-gray-700 transition-colors";
       });
       document.querySelectorAll("[id^='effect-']").forEach(el => {
