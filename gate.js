@@ -11,9 +11,9 @@ const toggleStatusLabel = document.getElementById('toggleStatusLabel');
 const portalFeedback = document.getElementById('portalFeedback');
 const headerTitle = document.querySelector('.portal-header h2');
 
-// Security Check: If already logged in, skip login page entirely
+// Security Check: If already logged in, skip the gate and go directly to the canvas!
 if (localStorage.getItem('activeCrewMember')) {
-    window.location.href = 'index.html';
+    window.location.href = 'login.html'; // <-- Points to your canvas page
 }
 
 // Named function to handle switching modes (No arguments.callee needed!)
@@ -83,7 +83,7 @@ portalForm.addEventListener('submit', (e) => {
 
 function loginUser(username) {
     localStorage.setItem('activeCrewMember', username);
-    window.location.href = 'index.html'; // Direct route to the workspace dashboard
+    window.location.href = 'login.html'; // <-- Redirects to your canvas page!
 }
 
 function showFeedback(message, type) {
