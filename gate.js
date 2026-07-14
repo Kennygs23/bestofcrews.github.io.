@@ -7,7 +7,7 @@ const usernameInput = document.getElementById('username');
 const passwordInput = document.getElementById('password');
 const submitBtn = document.getElementById('submitBtn');
 const toggleModeLink = document.getElementById('toggleMode');
-const toggleText = document.getElementById('toggleText');
+const toggleStatusLabel = document.getElementById('toggleStatusLabel');
 const portalFeedback = document.getElementById('portalFeedback');
 const headerTitle = document.querySelector('.portal-header h2');
 
@@ -16,8 +16,8 @@ if (localStorage.getItem('activeCrewMember')) {
     window.location.href = 'index.html';
 }
 
-// Toggle between Login and Register Mode
-toggleModeLink.addEventListener('click', (e) => {
+// Named function to handle switching modes (No arguments.callee needed!)
+function handleToggle(e) {
     e.preventDefault();
     isRegisterMode = !isRegisterMode;
     
@@ -28,20 +28,22 @@ toggleModeLink.addEventListener('click', (e) => {
     if (isRegisterMode) {
         headerTitle.textContent = '🚧 REGISTER NEW CREW';
         submitBtn.textContent = 'CREATE ACCOUNT';
-        toggleText.innerHTML = 'Already in the crew? <a href="#" id="toggleMode">Sign In</a>';
+        toggleStatusLabel.textContent = 'Already in the crew?';
+        toggleModeLink.textContent = 'Sign In';
     } else {
         headerTitle.textContent = '⚠️ CREW ACCESS REQUIRED';
         submitBtn.textContent = 'AUTHENTICATE';
-        toggleText.innerHTML = 'New to the crew? <a href="#" id="toggleMode">Create an Account</a>';
+        toggleStatusLabel.textContent = 'New to the crew?';
+        toggleModeLink.textContent = 'Create an Account';
     }
+}
 
-    // Re-bind click event to the newly rendered anchor link
-    document.getElementById('toggleMode').addEventListener('click', arguments.callee);
-});
+// Bind toggle action
+toggleModeLink.addEventListener('click', handleToggle);
 
 // Form Submission (Login/Register)
 portalForm.addEventListener('submit', (e) => {
-    e.preventDefault(); // <-- Stops the page from refreshing and erasing text!
+    e.preventDefault(); // <-- Stops the browser from refreshing!
     
     const username = usernameInput.value.trim();
     const password = passwordInput.value;
