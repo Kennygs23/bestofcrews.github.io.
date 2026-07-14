@@ -11,12 +11,12 @@ const toggleStatusLabel = document.getElementById('toggleStatusLabel');
 const portalFeedback = document.getElementById('portalFeedback');
 const headerTitle = document.querySelector('.portal-header h2');
 
-// Security Check: If already logged in, skip the gate and go directly to the canvas!
+// Security Check: If already logged in, skip the gate and go directly to index.html!
 if (localStorage.getItem('activeCrewMember')) {
-    window.location.href = 'login.html'; // <-- Points to your canvas page
+    window.location.href = 'index.html'; 
 }
 
-// Named function to handle switching modes (No arguments.callee needed!)
+// Named function to handle switching modes
 function handleToggle(e) {
     e.preventDefault();
     isRegisterMode = !isRegisterMode;
@@ -43,7 +43,7 @@ toggleModeLink.addEventListener('click', handleToggle);
 
 // Form Submission (Login/Register)
 portalForm.addEventListener('submit', (e) => {
-    e.preventDefault(); // <-- Stops the browser from refreshing!
+    e.preventDefault(); // Stops the browser from refreshing!
     
     const username = usernameInput.value.trim();
     const password = passwordInput.value;
@@ -83,7 +83,7 @@ portalForm.addEventListener('submit', (e) => {
 
 function loginUser(username) {
     localStorage.setItem('activeCrewMember', username);
-    window.location.href = 'login.html'; // <-- Redirects to your canvas page!
+    window.location.href = 'index.html'; // Points cleanly to your main dashboard page
 }
 
 function showFeedback(message, type) {
