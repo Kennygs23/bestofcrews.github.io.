@@ -64,3 +64,44 @@ function addModule(type) {
     // Append the new card to the spatial canvas
     canvas.appendChild(card);
 }
+// --- INTERACTIVE BREAKROOM CHAT ---
+
+const chatForm = document.getElementById('chatForm');
+const chatInput = document.getElementById('chatInput');
+const chatStream = document.getElementById('chatStream');
+
+// Random crew names to rotate through for simulation
+const crewNames = ["Ken", "Erick", "Crew", "Fabricator_Dave", "Lead_Hand"];
+
+chatForm.addEventListener('submit', function(e) {
+    e.preventDefault(); // Stop page from reloading on form submit
+    
+    const messageText = chatInput.value.trim();
+    if (messageText === '') return;
+
+    // Pick a random sender for now (Later on we can make a settings card to set your username)
+    const sender = crewNames[Math.floor(Math.random() * crewNames.length)];
+    
+    // Create new chat elements
+    const tagSpan = document.createElement('span');
+    tagSpan.classList.add('chat-tag');
+    tagSpan.textContent = `[${sender}]:`;
+
+    const msgSpan = document.createTextNode(` ${messageText} `);
+
+    const dividerSpan = document.createElement('span');
+    dividerSpan.classList.add('divider');
+    dividerSpan.textContent = '|';
+
+    // Append to the stream
+    chatStream.appendChild(tagSpan);
+    chatStream.appendChild(msgSpan);
+    chatStream.appendChild(dividerSpan);
+
+    // Clear input field
+    chatInput.value = '';
+
+    // Automatically scroll the stream container to the end to show the newest message
+    const container = chatStream.parentElement;
+    container.scrollLeft = container.scrollWidth;
+});
