@@ -1,0 +1,327 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Best of Crews - Think Tank Rack</title>
+  <!-- Tailwind CSS CDN for instant styling -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <style>
+    /* Custom scrollbar to keep it looking clean */
+    ::-webkit-scrollbar {
+      width: 6px;
+    }
+    ::-webkit-scrollbar-track {
+      background: #1f2937;
+    }
+    ::-webkit-scrollbar-thumb {
+      background: #4b5563;
+      border-radius: 3px;
+    }
+  </style>
+</head>
+<body class="bg-gray-950 text-gray-100 font-sans min-h-screen pb-12">
+
+  <!-- Header -->
+  <header class="border-b border-gray-800 bg-gray-900/50 backdrop-blur-sm sticky top-0 z-50 px-6 py-4">
+    <div class="max-w-6xl mx-auto flex justify-between items-center">
+      <div class="flex items-center space-x-3">
+        <span class="text-2xl">⚡</span>
+        <h1 class="text-xl font-bold tracking-wider text-white">BESTOFCREWS.COM <span class="text-orange-500 font-mono text-xs border border-orange-500/30 px-2 py-0.5 rounded ml-2">THINK TANK V1.0</span></h1>
+      </div>
+      <p class="text-xs text-gray-400 font-mono">SIGNAL CHAIN STATUS: ONLINE</p>
+    </div>
+  </header>
+
+  <main class="max-w-6xl mx-auto px-4 mt-8 grid grid-cols-1 lg:grid-cols-12 gap-8">
+    
+    <!-- Left Column: Inputs & Rack (8 Cols) -->
+    <div class="lg:col-span-8 space-y-6">
+      
+      <!-- Input Section -->
+      <div class="bg-gray-900 border border-gray-800 rounded-xl p-6 shadow-xl">
+        <div class="flex items-center justify-between mb-3">
+          <label class="block text-xs font-mono uppercase tracking-widest text-gray-400">[ 1. Inject Raw Concept ]</label>
+          <span class="text-xs text-gray-500 font-mono" id="char-count">0 chars</span>
+        </div>
+        <textarea 
+          id="raw-input" 
+          rows="4" 
+          class="w-full bg-gray-950 border border-gray-800 rounded-lg p-4 text-white placeholder-gray-600 focus:outline-none focus:ring-2 focus:ring-orange-500 focus:border-transparent transition-all font-mono text-sm"
+          placeholder="Paste or type your raw, chaotic, unfiltered idea here..."
+          oninput="updateOutput()"
+        ></textarea>
+      </div>
+
+      <!-- Creative Pack (Ideation Utilities) -->
+      <div class="bg-gray-900 border border-gray-800 rounded-xl p-6 shadow-xl">
+        <h2 class="text-xs font-mono uppercase tracking-widest text-orange-400 mb-4 flex items-center gap-2">
+          <span class="inline-block w-2.5 height w-2.5 rounded-full bg-orange-500 animate-pulse"></span>
+          🎨 The Creative Pack (Ideation Utilities)
+        </h2>
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-3" id="creative-rack">
+          <!-- Populated by JS -->
+        </div>
+      </div>
+
+      <!-- Effects Pack (Format & Style Shifters) -->
+      <div class="bg-gray-900 border border-gray-800 rounded-xl p-6 shadow-xl">
+        <h2 class="text-xs font-mono uppercase tracking-widest text-blue-400 mb-4 flex items-center gap-2">
+          <span class="inline-block w-2.5 height w-2.5 rounded-full bg-blue-500 animate-pulse"></span>
+          🎛️ The Effects Pack (Format & Shifters)
+        </h2>
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-3" id="effects-rack">
+          <!-- Populated by JS -->
+        </div>
+      </div>
+
+    </div>
+
+    <!-- Right Column: Live Output & Controls (4 Cols) -->
+    <div class="lg:col-span-4">
+      <div class="sticky top-24 space-y-6">
+        
+        <!-- Combined Prompt Box -->
+        <div class="bg-gray-900 border border-gray-800 rounded-xl p-6 shadow-xl flex flex-col h-[500px]">
+          <div class="flex items-center justify-between mb-4 border-b border-gray-800 pb-3">
+            <span class="text-xs font-mono uppercase tracking-widest text-emerald-400">[ Output Payload ]</span>
+            <button 
+              onclick="clearAll()" 
+              class="text-xs font-mono text-red-400 hover:text-red-300 transition-colors"
+            >
+              Reset Rack
+            </button>
+          </div>
+
+          <!-- Preview Pane -->
+          <div class="flex-1 overflow-y-auto bg-gray-950 border border-gray-850 rounded-lg p-4 font-mono text-xs text-gray-300 space-y-3" id="output-preview">
+            <!-- Dynamically Rendered Preview -->
+          </div>
+
+          <!-- Master Action -->
+          <button 
+            id="copy-btn"
+            onclick="copyToClipboard()"
+            class="mt-4 w-full bg-emerald-600 hover:bg-emerald-500 active:scale-[0.98] text-white font-mono font-bold py-4 px-6 rounded-lg transition-all shadow-lg shadow-emerald-900/30 flex items-center justify-center gap-3"
+          >
+            <span class="text-lg">📋</span> COPY COMPILED GEM
+          </button>
+        </div>
+
+      </div>
+    </div>
+
+  </main>
+
+  <script>
+    // System Data Store
+    const creativePack = [
+      { id: "cliche", name: "The Cliché Clipper", prompt: 'Identify the top three most predictable, overused tropes for this concept, and explicitly ban them from your response.' },
+      { id: "cross", name: "The Cross-Pollinator", prompt: 'Merge this concept with an entirely unrelated industry or discipline (e.g., blend carpentry mechanics with music production) to find a unique angle.' },
+      { id: "scale", name: "The Extreme Scale Shift", prompt: 'How would this concept change if we had 100x the budget/resources? How would it change if we had exactly zero budget?' },
+      { id: "subversive", name: "The Subversive Lens", prompt: 'Flip the traditional perspective completely upside down. What does the "rebel" or unconventional version of this look like?' },
+      { id: "analog", name: "The Analog Engine", prompt: 'Translate this abstract digital or conceptual idea into a highly tactile, physical metaphor or mechanical system.' },
+      { id: "minimalism", name: "The Minimalism Gate", prompt: 'Strip this creative concept down to its absolute bare skeleton. What is the most powerful version of this using the fewest moving parts?' },
+      { id: "kinetic", name: "The Kinetic Spark", prompt: 'Inject high physical energy, movement, and vivid sensory pacing into this description or narrative.' },
+      { id: "time", name: "The Time Machine", prompt: 'Reframe this concept as if it were being built or launched in a completely different era (e.g., the 1970s or 50 years into the future).' },
+      { id: "contrast", name: "The Contrast Dial", prompt: 'Juxtapose two intensely clashing tones or aesthetics here to create visual or narrative tension.' },
+      { id: "open", name: "The Open-Ended Stem", prompt: 'Provide three highly compelling, unfinished creative concepts that leave the final execution hanging for me to step in and finish.' },
+      { id: "metaphorical", name: "The Metaphorical Blueprint", prompt: 'Explain this concept by comparing it entirely to the physical layout, mechanics, and structural stress points of an entirely different system.' }
+    ];
+
+    const effectsPack = [
+      { id: "compressor", name: "The Parallel Compressor", prompt: 'Condense your entire response into a hard-hitting, single-sentence takeaway followed by ultra-dense bullet points. Max 150 words.' },
+      { id: "desser", name: "The De-Esser (No Fluff)", prompt: 'Strip away all conversational introductory phrases, filler words, concluding summaries, and AI politeness. Start directly with the answer.' },
+      { id: "eq", name: "The EQ Boost (Formatting)", prompt: 'Format the output with extreme scannability: bold key phrases, use horizontal divider lines, and isolate critical warnings inside blockquotes.' },
+      { id: "saturation", name: "The Saturation Knob (Raw)", prompt: 'Adopt a highly authentic, direct, no-nonsense tone. Speak to me like an experienced peer in the shop, not a textbook.' },
+      { id: "matrix", name: "The Matrix Router (Table)", prompt: 'Convert the core data points into a strict, highly structured Markdown comparison table analyzing Pros, Cons, and Resource Costs.' },
+      { id: "bitcrusher", name: "The Bitcrusher (Simple)", prompt: 'Explain this highly complex technical process using language so basic a 10-year-old could easily grasp it, without losing the core logic.' },
+      { id: "reverb", name: "The Reverb Chamber (Vivid)", prompt: 'Amplify the descriptive depth. Paint a highly detailed visual picture of the environment, texture, and setting.' },
+      { id: "gate", name: "The Gate (Validation)", prompt: 'If the data to answer this accurately does not exist or requires guessing, stop immediately. State "Insufficient Data" and list what is missing.' },
+      { id: "sequencer", name: "The Step Sequencer", prompt: 'Enclose this process in a strict sequential format where each step relies entirely on the successful completion of the previous one.' },
+      { id: "limit", name: "The Limit Meter", prompt: 'Deliver the entire response in exactly three punchy bullet points. No more, no less.' },
+      { id: "contrastive", name: "The Contrastive Filter", prompt: 'For every piece of advice or step you provide, use a two-column layout: Column 1: "What to DO" (highly specific, actionable instruction), Column 2: "What it replaces" (the common, lazy, or baseline mistake people usually make).' }
+    ];
+
+    // Current State
+    let activeCreativeId = null;
+    let activeEffectId = null;
+
+    // Build the UI elements
+    function init() {
+      const creativeContainer = document.getElementById("creative-rack");
+      creativePack.forEach(pedal => {
+        const btn = document.createElement("button");
+        btn.id = `creative-${pedal.id}`;
+        btn.className = "flex flex-col items-start text-left p-3 rounded-lg border border-gray-800 bg-gray-950/60 hover:bg-gray-800/40 transition-all duration-200 cursor-pointer focus:outline-none focus:ring-1 focus:ring-orange-500/50";
+        btn.onclick = () => toggleCreative(pedal.id);
+        btn.innerHTML = `
+          <div class="flex items-center gap-2">
+            <span class="indicator w-2 h-2 rounded-full bg-gray-700 transition-colors"></span>
+            <span class="font-mono text-xs font-bold text-gray-200">${pedal.name}</span>
+          </div>
+        `;
+        creativeContainer.appendChild(btn);
+      });
+
+      const effectsContainer = document.getElementById("effects-rack");
+      effectsPack.forEach(pedal => {
+        const btn = document.createElement("button");
+        btn.id = `effect-${pedal.id}`;
+        btn.className = "flex flex-col items-start text-left p-3 rounded-lg border border-gray-800 bg-gray-950/60 hover:bg-gray-800/40 transition-all duration-200 cursor-pointer focus:outline-none focus:ring-1 focus:ring-blue-500/50";
+        btn.onclick = () => toggleEffect(pedal.id);
+        btn.innerHTML = `
+          <div class="flex items-center gap-2">
+            <span class="indicator w-2 h-2 rounded-full bg-gray-700 transition-colors"></span>
+            <span class="font-mono text-xs font-bold text-gray-200">${pedal.name}</span>
+          </div>
+        `;
+        effectsContainer.appendChild(btn);
+      });
+
+      updateOutput();
+    }
+
+    // Handlers
+    function toggleCreative(id) {
+      if (activeCreativeId === id) {
+        activeCreativeId = null;
+      } else {
+        activeCreativeId = id;
+      }
+      
+      // Update visual states
+      creativePack.forEach(pedal => {
+        const el = document.getElementById(`creative-${pedal.id}`);
+        const indicator = el.querySelector(".indicator");
+        if (pedal.id === activeCreativeId) {
+          el.classList.add("border-orange-500/80", "bg-orange-950/20");
+          indicator.classList.remove("bg-gray-700");
+          indicator.classList.add("bg-orange-500");
+        } else {
+          el.classList.remove("border-orange-500/80", "bg-orange-950/20");
+          indicator.classList.remove("bg-orange-500");
+          indicator.classList.add("bg-gray-700");
+        }
+      });
+      updateOutput();
+    }
+
+    function toggleEffect(id) {
+      if (activeEffectId === id) {
+        activeEffectId = null;
+      } else {
+        activeEffectId = id;
+      }
+
+      // Update visual states
+      effectsPack.forEach(pedal => {
+        const el = document.getElementById(`effect-${pedal.id}`);
+        const indicator = el.querySelector(".indicator");
+        if (pedal.id === activeEffectId) {
+          el.classList.add("border-blue-500/80", "bg-blue-950/20");
+          indicator.classList.remove("bg-gray-700");
+          indicator.classList.add("bg-blue-500");
+        } else {
+          el.classList.remove("border-blue-500/80", "bg-blue-950/20");
+          indicator.classList.remove("bg-blue-500");
+          indicator.classList.add("bg-gray-700");
+        }
+      });
+      updateOutput();
+    }
+
+    // Build the compiled prompt
+    function buildPrompt() {
+      const rawText = document.getElementById("raw-input").value.trim();
+      const creative = creativePack.find(p => p.id === activeCreativeId);
+      const effect = effectsPack.find(p => p.id === activeEffectId);
+
+      let parts = [];
+      
+      if (creative) {
+        parts.push(creative.prompt);
+      }
+      
+      if (rawText) {
+        parts.push(rawText);
+      } else {
+        parts.push("[Insert your raw concept here]");
+      }
+      
+      if (effect) {
+        parts.push(effect.prompt);
+      }
+
+      return parts.join("\n\n");
+    }
+
+    // Update Output Screen
+    function updateOutput() {
+      const rawText = document.getElementById("raw-input").value;
+      document.getElementById("char-count").innerText = `${rawText.length} chars`;
+
+      const previewContainer = document.getElementById("output-preview");
+      const creative = creativePack.find(p => p.id === activeCreativeId);
+      const effect = effectsPack.find(p => p.id === activeEffectId);
+
+      let html = "";
+
+      if (creative) {
+        html += `<div class="p-2 bg-orange-950/10 border-l-2 border-orange-500/55 rounded"><span class="text-orange-400 font-bold block mb-1">[UTILITY: ${creative.name.toUpperCase()}]</span>${creative.prompt}</div>`;
+      }
+
+      if (rawText.trim()) {
+        html += `<div class="p-2 bg-gray-900/40 border-l-2 border-gray-600 rounded"><span class="text-gray-400 font-bold block mb-1">[INPUT CONCEPT]</span>${rawText}</div>`;
+      } else {
+        html += `<div class="p-2 border-l-2 border-dashed border-gray-800 text-gray-600 italic">Waiting for raw concept...</div>`;
+      }
+
+      if (effect) {
+        html += `<div class="p-2 bg-blue-950/10 border-l-2 border-blue-500/55 rounded"><span class="text-blue-400 font-bold block mb-1">[EFFECT: ${effect.name.toUpperCase()}]</span>${effect.prompt}</div>`;
+      }
+
+      previewContainer.innerHTML = html || "<span class='text-gray-600 italic'>Route a signal to preview payload.</span>";
+    }
+
+    // Clear everything
+    function clearAll() {
+      document.getElementById("raw-input").value = "";
+      activeCreativeId = null;
+      activeEffectId = null;
+      
+      // Reset all buttons
+      document.querySelectorAll("[id^='creative-']").forEach(el => {
+        el.classList.remove("border-orange-500/80", "bg-orange-950/20");
+        el.querySelector(".indicator").className = "indicator w-2 h-2 rounded-full bg-gray-700 transition-colors";
+      });
+      document.querySelectorAll("[id^='effect-']").forEach(el => {
+        el.classList.remove("border-blue-500/80", "bg-blue-950/20");
+        el.querySelector(".indicator").className = "indicator w-2 h-2 rounded-full bg-gray-700 transition-colors";
+      });
+
+      updateOutput();
+    }
+
+    // Copy to clipboard with native animation feedback
+    function copyToClipboard() {
+      const fullText = buildPrompt();
+      navigator.clipboard.writeText(fullText).then(() => {
+        const copyBtn = document.getElementById("copy-btn");
+        const originalText = copyBtn.innerHTML;
+        
+        copyBtn.innerHTML = `<span>✓</span> COPIED TO CLIPBOARD!`;
+        copyBtn.className = "mt-4 w-full bg-emerald-500 text-white font-mono font-bold py-4 px-6 rounded-lg transition-all scale-[1.02] flex items-center justify-center gap-3";
+        
+        setTimeout(() => {
+          copyBtn.innerHTML = originalText;
+          copyBtn.className = "mt-4 w-full bg-emerald-600 hover:bg-emerald-500 active:scale-[0.98] text-white font-mono font-bold py-4 px-6 rounded-lg transition-all shadow-lg shadow-emerald-900/30 flex items-center justify-center gap-3";
+        }, 1500);
+      });
+    }
+
+    // Fire up
+    init();
+  </script>
+</body>
+</html>
