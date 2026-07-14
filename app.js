@@ -7,7 +7,6 @@ const crewNotes = [
     "Lunch run at 12:00. Text Ken your order."
 ];
 
-
 // --- BUILD LOGS ---
 const buildLogs = [
     "Structural frame completed. Moving on to skinning and paint.",
@@ -16,21 +15,17 @@ const buildLogs = [
     "Load-in successful. Ground-anchors set and inspected."
 ];
 
-
 // --- CURRENT USER ---
 const currentUser = localStorage.getItem("activeCrewMember");
-
 
 // --- LOGOUT ---
 function logout() {
     localStorage.removeItem("activeCrewMember");
-    window.location.href = "index.html";
+    window.location.href = "login.html"; // Kicks you completely out to the login page
 }
-
 
 // --- ADD CANVAS MODULES ---
 function addModule(type) {
-
     const canvas = document.getElementById("canvas");
 
     const card = document.createElement("div");
@@ -39,119 +34,78 @@ function addModule(type) {
     card.style.gridColumn = `span ${Math.floor(Math.random()*2)+1}`;
     card.style.gridRow = `span ${Math.floor(Math.random()*2)+1}`;
 
-
     let title = "";
     let content = "";
 
-
     if(type === "photo") {
-
         title = "📸 Crew Photo";
-
         content = `
         <div class="photo-placeholder">
         [ Click to Upload Photo ]
         </div>
         `;
-
     }
 
-
     if(type === "notes") {
-
         title = "📝 Crew Note";
-
         content = `
         <p>
         ${crewNotes[Math.floor(Math.random()*crewNotes.length)]}
         </p>
         `;
-
     }
 
-
     if(type === "build") {
-
         title = "⚙️ Build Log";
-
         content = `
         <p>
         <strong>Status:</strong>
         ${buildLogs[Math.floor(Math.random()*buildLogs.length)]}
         </p>
         `;
-
     }
 
-
     card.innerHTML = `
-
     <div class="card-header">
-
         ${title}
-
         <span 
         class="delete-btn"
         onclick="this.closest('.canvas-card').remove()">
         ×
         </span>
-
     </div>
-
-
     <div class="card-body">
-
         ${content}
-
     </div>
-
     `;
 
-
     canvas.appendChild(card);
-
 }
 
-
 // --- BREAKROOM CHAT ---
-
 const chatForm = document.getElementById("chatForm");
 const chatInput = document.getElementById("chatInput");
 const chatStream = document.getElementById("chatStream");
 
-
 if(chatForm){
+    chatForm.addEventListener("submit", function(event){
+        event.preventDefault();
 
-chatForm.addEventListener("submit", function(event){
+        const message = chatInput.value.trim();
+        if(message === "") return;
 
-    event.preventDefault();
+        const sender = currentUser || "Guest";
 
+        chatStream.innerHTML += `
+        <span class="chat-tag">
+        [${sender}]:
+        </span>
+        ${message}
+        <span class="divider">
+        |
+        </span>
+        `;
 
-    const message = chatInput.value.trim();
-
-    if(message === "") return;
-
-
-    const sender = currentUser || "Guest";
-
-
-    chatStream.innerHTML += `
-
-    <span class="chat-tag">
-    [${sender}]:
-    </span>
-
-    ${message}
-
-    <span class="divider">
-    |
-    </span>
-
-    `;
-
-
-    chatInput.value = "";
-
-});
-
+        chatInput.value = "";
+    });
 }
