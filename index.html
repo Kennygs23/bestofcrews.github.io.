@@ -1,372 +1,213 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Best of Crews - Think Tank Rack</title>
-  <script src="https://cdn.tailwindcss.com"></script>
-  <style>
-    ::-webkit-scrollbar {
-      width: 6px;
-    }
-    ::-webkit-scrollbar-track {
-      background: #111827;
-    }
-    ::-webkit-scrollbar-thumb {
-      background: #374151;
-      border-radius: 3px;
-    }
-  </style>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Launch Guide | BEST OF CREWS</title>
+    <!-- Tailwind CSS for styling -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        brandBlack: '#0D0D0D',
+                        brandZinc: '#F2F2F2',
+                        brandOrange: '#FF5500',
+                        brandGray: '#141414',
+                        brandCard: '#1E1E1E'
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        /* Textured shop grid background */
+        .shop-grid {
+            background-image: linear-gradient(rgba(255, 85, 0, 0.02) 1px, transparent 1px),
+                              linear-gradient(90deg, rgba(255, 85, 0, 0.02) 1px, transparent 1px);
+            background-size: 20px 20px;
+        }
+    </style>
 </head>
-<body class="bg-gray-950 text-gray-100 font-sans min-h-screen pb-12">
+<body class="bg-brandBlack text-brandZinc min-h-screen shop-grid flex flex-col justify-between">
 
-  <!-- Header -->
-  <header class="border-b border-gray-900 bg-gray-900/50 backdrop-blur-sm sticky top-0 z-50 px-6 py-4">
-    <div class="max-w-6xl mx-auto flex justify-between items-center">
-      <div class="flex items-center space-x-3">
-        <span class="text-2xl">⚡</span>
-        <h1 class="text-xl font-bold tracking-wider text-white">BESTOFCREWS.COM <span class="text-orange-500 font-mono text-xs border border-orange-500/30 px-2 py-0.5 rounded ml-2">THINK TANK V2.0</span></h1>
-      </div>
-      <p class="text-xs text-gray-400 font-mono">SIGNAL PATH: HOT</p>
-    </div>
-  </header>
-
-  <main class="max-w-6xl mx-auto px-4 mt-8 grid grid-cols-1 lg:grid-cols-12 gap-8">
-    
-    <!-- Left Column: Inputs & Racks -->
-    <div class="lg:col-span-8 space-y-6">
-      
-      <!-- Input Section -->
-      <div class="bg-gray-900 border border-gray-800 rounded-xl p-6 shadow-xl">
-        <div class="flex items-center justify-between mb-3">
-          <label class="block text-xs font-mono uppercase tracking-widest text-gray-400">[ 1. Inject Raw Concept ]</label>
-          <span class="text-xs text-gray-500 font-mono" id="char-count">0 chars</span>
+    <!-- Tactical Header -->
+    <header class="w-full max-w-5xl mx-auto px-6 py-6 border-b border-zinc-900 flex justify-between items-center">
+        <div class="flex items-center gap-3">
+            <div class="w-3 h-3 bg-brandOrange animate-pulse rounded-full"></div>
+            <span class="font-mono text-xs tracking-widest text-zinc-500 uppercase">SYS_DEPLOYMENT: ONLINE</span>
         </div>
-        <textarea 
-          id="raw-input" 
-          rows="4" 
-          class="w-full bg-gray-950 border border-gray-800 rounded-lg p-4 text-white placeholder-gray-650 focus:outline-none focus:ring-2 focus:ring-orange-500 focus:border-transparent transition-all font-mono text-sm"
-          placeholder="Paste or type your raw, chaotic, unfiltered idea here..."
-          oninput="updateOutput()"
-        ></textarea>
-      </div>
+        <span class="font-mono text-xs text-brandOrange tracking-widest">[ NETLIFY_DROP_WALKTHROUGH ]</span>
+    </header>
 
-      <!-- Section 1: Creative Pack -->
-      <div class="bg-gray-900 border border-gray-800 rounded-xl p-6 shadow-xl">
-        <h2 class="text-xs font-mono uppercase tracking-widest text-orange-400 mb-4 flex items-center gap-2">
-          <span class="inline-block w-2.5 h-2.5 rounded-full bg-orange-500 animate-pulse"></span>
-          🎨 The Creative Pack (Ideation Utilities)
-        </h2>
-        <div class="grid grid-cols-1 md:grid-cols-2 gap-3" id="creative-rack"></div>
-      </div>
-
-      <!-- Section 2: Analytic Pack (NEW!) -->
-      <div class="bg-gray-900 border border-gray-800 rounded-xl p-6 shadow-xl">
-        <h2 class="text-xs font-mono uppercase tracking-widest text-purple-400 mb-4 flex items-center gap-2">
-          <span class="inline-block w-2.5 h-2.5 rounded-full bg-purple-500 animate-pulse"></span>
-          🔬 The Analytic Pack (Diagnostic Utilities)
-        </h2>
-        <div class="grid grid-cols-1 md:grid-cols-2 gap-3" id="analytic-rack"></div>
-      </div>
-
-      <!-- Section 3: Effects Pack -->
-      <div class="bg-gray-900 border border-gray-800 rounded-xl p-6 shadow-xl">
-        <h2 class="text-xs font-mono uppercase tracking-widest text-blue-400 mb-4 flex items-center gap-2">
-          <span class="inline-block w-2.5 h-2.5 rounded-full bg-blue-500 animate-pulse"></span>
-          🎛️ The Effects Pack (Format & Shifters)
-        </h2>
-        <div class="grid grid-cols-1 md:grid-cols-2 gap-3" id="effects-rack"></div>
-      </div>
-
-    </div>
-
-    <!-- Right Column: Live Output & Controls -->
-    <div class="lg:col-span-4">
-      <div class="sticky top-24 space-y-6">
+    <!-- Main Content Container -->
+    <main class="w-full max-w-3xl mx-auto px-6 py-12 flex-grow flex flex-col justify-center">
         
-        <!-- Combined Prompt Box -->
-        <div class="bg-gray-900 border border-gray-800 rounded-xl p-6 shadow-xl flex flex-col h-[500px]">
-          <div class="flex items-center justify-between mb-4 border-b border-gray-800 pb-3">
-            <span class="text-xs font-mono uppercase tracking-widest text-emerald-400">[ Output Payload ]</span>
-            <button 
-              onclick="clearAll()" 
-              class="text-xs font-mono text-red-400 hover:text-red-300 transition-colors"
-            >
-              Reset Rack
-            </button>
-          </div>
-
-          <!-- Preview Pane -->
-          <div class="flex-1 overflow-y-auto bg-gray-950 border border-gray-850 rounded-lg p-4 font-mono text-xs text-gray-300 space-y-3" id="output-preview"></div>
-
-          <!-- Master Action -->
-          <button 
-            id="copy-btn"
-            onclick="copyToClipboard()"
-            class="mt-4 w-full bg-emerald-600 hover:bg-emerald-500 active:scale-[0.98] text-white font-mono font-bold py-4 px-6 rounded-lg transition-all shadow-lg shadow-emerald-900/30 flex items-center justify-center gap-3"
-          >
-            <span class="text-lg">📋</span> COPY COMPILED GEM
-          </button>
+        <!-- Header Section -->
+        <div class="mb-10 text-center sm:text-left">
+            <h1 class="text-3xl sm:text-4xl font-black uppercase tracking-tight text-white mb-2">
+                Chrome Launch Guide
+            </h1>
+            <p class="text-sm text-zinc-400 font-mono tracking-wide">
+                No Terminal. No code. Just dragging, dropping, and launching your digital compound.
+            </p>
         </div>
 
-      </div>
-    </div>
+        <!-- Overall Progress Bar -->
+        <div class="bg-brandGray border border-zinc-900 rounded p-4 mb-8">
+            <div class="flex justify-between items-center text-xs font-mono mb-2">
+                <span class="text-zinc-500 uppercase">Deployment Progress</span>
+                <span id="progressText" class="text-brandOrange font-bold">0% Complete</span>
+            </div>
+            <div class="w-full bg-brandBlack h-2 rounded overflow-hidden border border-zinc-800">
+                <div id="progressBar" class="bg-brandOrange h-full transition-all duration-300" style="width: 0%"></div>
+            </div>
+        </div>
 
-  </main>
+        <!-- Step Container -->
+        <div class="space-y-4">
+            
+            <!-- Step 1 -->
+            <div class="bg-brandGray border border-zinc-800 rounded-lg p-5 flex items-start gap-4 transition-all hover:border-zinc-700" id="step1-card">
+                <div class="flex items-center h-6">
+                    <input type="checkbox" id="step1" class="w-5 h-5 accent-brandOrange rounded border-zinc-800 bg-brandBlack focus:ring-0 cursor-pointer" onclick="updateProgress()">
+                </div>
+                <div class="flex-grow">
+                    <span class="font-mono text-xs text-brandOrange uppercase block mb-1">Step 01 // Save Code</span>
+                    <h3 class="text-lg font-bold text-white mb-2">Create your Index File</h3>
+                    <p class="text-sm text-zinc-400 mb-4">
+                        Copy the homepage code I generated for you. Open your Mac's <code class="bg-brandBlack px-1 py-0.5 rounded text-brandOrange font-mono text-xs">TextEdit</code> (or Windows Notepad). Paste the code, change the format to Plain Text, and save the file exactly as <strong class="text-zinc-200">index.html</strong> on your Desktop.
+                    </p>
+                </div>
+            </div>
 
-  <script>
-    const creativePack = [
-      { id: "cliche", name: "The Cliché Clipper", prompt: 'Identify the top three most predictable, overused tropes for this concept, and explicitly ban them from your response.' },
-      { id: "cross", name: "The Cross-Pollinator", prompt: 'Merge this concept with an entirely unrelated industry or discipline (e.g., blend carpentry mechanics with music production) to find a unique angle.' },
-      { id: "scale", name: "The Extreme Scale Shift", prompt: 'How would this concept change if we had 100x the budget/resources? How would it change if we had exactly zero budget?' },
-      { id: "subversive", name: "The Subversive Lens", prompt: 'Flip the traditional perspective completely upside down. What does the "rebel" or unconventional version of this look like?' },
-      { id: "analog", name: "The Analog Engine", prompt: 'Translate this abstract digital or conceptual idea into a highly tactile, physical metaphor or mechanical system.' },
-      { id: "minimalism", name: "The Minimalism Gate", prompt: 'Strip this creative concept down to its absolute bare skeleton. What is the most powerful version of this using the fewest moving parts?' },
-      { id: "kinetic", name: "The Kinetic Spark", prompt: 'Inject high physical energy, movement, and vivid sensory pacing into this description or narrative.' },
-      { id: "time", name: "The Time Machine", prompt: 'Reframe this concept as if it were being built or launched in a completely different era (e.g., the 1970s or 50 years into the future).' },
-      { id: "contrast", name: "The Contrast Dial", prompt: 'Juxtapose two intensely clashing tones or aesthetics here to create visual or narrative tension.' },
-      { id: "open", name: "The Open-Ended Stem", prompt: 'Provide three highly compelling, unfinished creative concepts that leave the final execution hanging for me to step in and finish.' },
-      { id: "metaphorical", name: "The Metaphorical Blueprint", prompt: 'Explain this concept by comparing it entirely to the physical layout, mechanics, and structural stress points of an entirely different system.' }
-    ];
+            <!-- Step 2 -->
+            <div class="bg-brandGray border border-zinc-800 rounded-lg p-5 flex items-start gap-4 transition-all hover:border-zinc-700" id="step2-card">
+                <div class="flex items-center h-6">
+                    <input type="checkbox" id="step2" class="w-5 h-5 accent-brandOrange rounded border-zinc-800 bg-brandBlack focus:ring-0 cursor-pointer" onclick="updateProgress()">
+                </div>
+                <div class="flex-grow w-full">
+                    <span class="font-mono text-xs text-brandOrange uppercase block mb-1">Step 02 // Open Netlify Drop</span>
+                    <h3 class="text-lg font-bold text-white mb-2">Access the secret launchpad</h3>
+                    <p class="text-sm text-zinc-400 mb-4">
+                        Open a new tab in Google Chrome, paste the link below, and press Enter:
+                    </p>
+                    <div class="flex items-center gap-2 max-w-md">
+                        <input type="text" readonly value="https://app.netlify.com/drop" id="netlifyUrl" class="bg-brandBlack border border-zinc-800 text-brandOrange rounded px-3 py-2 text-xs font-mono w-full focus:outline-none">
+                        <button onclick="copyToClipboard('netlifyUrl', 'copyBtn1')" id="copyBtn1" class="bg-zinc-800 text-white font-mono text-xs uppercase px-4 py-2 rounded hover:bg-zinc-700 transition-colors">
+                            Copy Link
+                        </button>
+                    </div>
+                </div>
+            </div>
 
-    const analyticPack = [
-      { id: "spectral", name: "The Spectral Analyzer", prompt: 'Identify the hidden assumptions or logical blind spots in the context provided that I might be blind to.' },
-      { id: "stress", name: "The Stress Test", prompt: 'Analyze this plan/design and simulate three distinct ways it could completely fail under real-world pressure.' },
-      { id: "pareto", name: "The Pareto Filter", prompt: 'Identify the 20% of variables or actions in this scenario that will drive 80% of the actual results.' },
-      { id: "root", name: "Root Cause Extraction", prompt: "Don't address the surface symptoms. Trace this issue backward to its foundational root cause." },
-      { id: "firstprinciples", name: "First Principles Stripper", prompt: 'Deconstruct this concept entirely down to its most basic, undeniable physical or logical truths—remove all industry jargon and assumptions.' },
-      { id: "devils", name: "The Devil's Advocate", prompt: "Take the exact opposite stance of my implied goal. Critique my strategy aggressively from an outsider's perspective." },
-      { id: "horizon", name: "The Horizon Scanner", prompt: 'What is the secondary, long-term ripple effect of executing this solution two to three steps down the line?' },
-      { id: "radar", name: "The Blindspot Radar", prompt: "What is the single most important question about this scenario that I haven't thought to ask you yet?" },
-      { id: "friction", name: "The Friction Locator", prompt: 'Where is the hidden bottleneck, manual drag, or efficiency leak in this workflow/system?' },
-      { id: "calibration", name: "The Calibration Meter", prompt: 'Rate the viability of this approach on a scale of 1-10, justify the score, and tell me exactly what it takes to make it a 10.' },
-      { id: "triangulation", name: "The Triangulation Engine", prompt: 'Identify three completely conflicting perspectives or schools of thought regarding this problem. Show how each perspective would solve it, and then synthesize a hybrid path that extracts the best elements of all three.' },
-      { id: "hindsight", name: "The Hindsight Simulator", prompt: 'Describe the post-mortem report from the future: what went wrong, what warning signs did we ignore in the planning phase, and how do we prevent it?' }
-    ];
+            <!-- Step 3 -->
+            <div class="bg-brandGray border border-zinc-800 rounded-lg p-5 flex items-start gap-4 transition-all hover:border-zinc-700" id="step3-card">
+                <div class="flex items-center h-6">
+                    <input type="checkbox" id="step3" class="w-5 h-5 accent-brandOrange rounded border-zinc-800 bg-brandBlack focus:ring-0 cursor-pointer" onclick="updateProgress()">
+                </div>
+                <div class="flex-grow">
+                    <span class="font-mono text-xs text-brandOrange uppercase block mb-1">Step 03 // Drag & Drop</span>
+                    <h3 class="text-lg font-bold text-white mb-2">Drop your code on the target</h3>
+                    <p class="text-sm text-zinc-400">
+                        Drag your <strong class="text-zinc-200">index.html</strong> file from your desktop and drop it directly onto the large dotted circle in the middle of that Netlify screen in Chrome. In less than 3 seconds, Netlify will compile it and give you a live URL.
+                    </p>
+                </div>
+            </div>
 
-    const effectsPack = [
-      { id: "compressor", name: "The Parallel Compressor", prompt: 'Condense your entire response into a hard-hitting, single-sentence takeaway followed by ultra-dense bullet points. Max 150 words.' },
-      { id: "desser", name: "The De-Esser (No Fluff)", prompt: 'Strip away all conversational introductory phrases, filler words, concluding summaries, and AI politeness. Start directly with the answer.' },
-      { id: "eq", name: "The EQ Boost (Formatting)", prompt: 'Format the output with extreme scannability: bold key phrases, use horizontal divider lines, and isolate critical warnings inside blockquotes.' },
-      { id: "saturation", name: "The Saturation Knob (Raw)", prompt: 'Adopt a highly authentic, direct, no-nonsense tone. Speak to me like an experienced peer in the shop, not a textbook.' },
-      { id: "matrix", name: "The Matrix Router (Table)", prompt: 'Convert the core data points into a strict, highly structured Markdown comparison table analyzing Pros, Cons, and Resource Costs.' },
-      { id: "bitcrusher", name: "The Bitcrusher (Simple)", prompt: 'Explain this highly complex technical process using language so basic a 10-year-old could easily grasp it, without losing the core logic.' },
-      { id: "reverb", name: "The Reverb Chamber (Vivid)", prompt: 'Amplify the descriptive depth. Paint a highly detailed visual picture of the environment, texture, and setting.' },
-      { id: "gate", name: "The Gate (Validation)", prompt: 'If the data to answer this accurately does not exist or requires guessing, stop immediately. State "Insufficient Data" and list what is missing.' },
-      { id: "sequencer", name: "The Step Sequencer", prompt: 'Enclose this process in a strict sequential format where each step relies entirely on the successful completion of the previous one.' },
-      { id: "limit", name: "The Limit Meter", prompt: 'Deliver the entire response in exactly three punchy bullet points. No more, no less.' },
-      { id: "contrastive", name: "The Contrastive Filter", prompt: 'For every piece of advice or step you provide, use a two-column layout: Column 1: "What to DO" (highly specific, actionable instruction), Column 2: "What it replaces" (the common, lazy, or baseline mistake people usually make).' }
-    ];
+            <!-- Step 4 -->
+            <div class="bg-brandGray border border-zinc-800 rounded-lg p-5 flex items-start gap-4 transition-all hover:border-zinc-700" id="step4-card">
+                <div class="flex items-center h-6">
+                    <input type="checkbox" id="step4" class="w-5 h-5 accent-brandOrange rounded border-zinc-800 bg-brandBlack focus:ring-0 cursor-pointer" onclick="updateProgress()">
+                </div>
+                <div class="flex-grow">
+                    <span class="font-mono text-xs text-brandOrange uppercase block mb-1">Step 04 // Connect Domain</span>
+                    <h3 class="text-lg font-bold text-white mb-2">Claim bestofcrews.com</h3>
+                    <p class="text-sm text-zinc-400">
+                        Create a free Netlify account when prompted to keep your site. Go to the dashboard settings of your new site, click <strong class="text-zinc-200">"Domain Management"</strong>, click <strong class="text-zinc-200">"Add custom domain"</strong>, and enter <strong class="text-brandOrange">bestofcrews.com</strong>.
+                    </p>
+                </div>
+            </div>
 
-    let activeCreativeId = null;
-    let activeAnalyticId = null;
-    let activeEffectId = null;
+            <!-- Step 5 -->
+            <div class="bg-brandGray border border-zinc-800 rounded-lg p-5 flex items-start gap-4 transition-all hover:border-zinc-700" id="step5-card">
+                <div class="flex items-center h-6">
+                    <input type="checkbox" id="step5" class="w-5 h-5 accent-brandOrange rounded border-zinc-800 bg-brandBlack focus:ring-0 cursor-pointer" onclick="updateProgress()">
+                </div>
+                <div class="flex-grow">
+                    <span class="font-mono text-xs text-brandOrange uppercase block mb-1">Step 05 // Shake Hands with DNS</span>
+                    <h3 class="text-lg font-bold text-white mb-2">Hand off the keys</h3>
+                    <p class="text-sm text-zinc-400">
+                        Netlify will show you four custom Name Server addresses. Go to the registrar where you bought your domain (like GoDaddy, Namecheap, etc.), look for your domain’s <strong class="text-zinc-200">"DNS Settings / Nameservers"</strong>, and replace whatever is there with the nameservers Netlify gave you.
+                    </p>
+                </div>
+            </div>
 
-    function init() {
-      // Creative Rack
-      const creativeContainer = document.getElementById("creative-rack");
-      creativePack.forEach(pedal => {
-        const btn = document.createElement("button");
-        btn.id = `creative-${pedal.id}`;
-        btn.className = "flex flex-col items-start text-left p-3 rounded-lg border border-gray-850 bg-gray-950/60 hover:bg-gray-800/40 transition-all duration-200 cursor-pointer focus:outline-none w-full";
-        btn.onclick = () => toggleCreative(pedal.id);
-        btn.innerHTML = `
-          <div class="flex items-center gap-2">
-            <span class="indicator w-2 h-2 rounded-full bg-gray-700 transition-colors"></span>
-            <span class="font-mono text-xs font-bold text-gray-200">${pedal.name}</span>
-          </div>
-        `;
-        creativeContainer.appendChild(btn);
-      });
+        </div>
 
-      // Analytic Rack
-      const analyticContainer = document.getElementById("analytic-rack");
-      analyticPack.forEach(pedal => {
-        const btn = document.createElement("button");
-        btn.id = `analytic-${pedal.id}`;
-        btn.className = "flex flex-col items-start text-left p-3 rounded-lg border border-gray-850 bg-gray-950/60 hover:bg-gray-800/40 transition-all duration-200 cursor-pointer focus:outline-none w-full";
-        btn.onclick = () => toggleAnalytic(pedal.id);
-        btn.innerHTML = `
-          <div class="flex items-center gap-2">
-            <span class="indicator w-2 h-2 rounded-full bg-gray-700 transition-colors"></span>
-            <span class="font-mono text-xs font-bold text-gray-200">${pedal.name}</span>
-          </div>
-        `;
-        analyticContainer.appendChild(btn);
-      });
+    </main>
 
-      // Effects Rack
-      const effectsContainer = document.getElementById("effects-rack");
-      effectsPack.forEach(pedal => {
-        const btn = document.createElement("button");
-        btn.id = `effect-${pedal.id}`;
-        btn.className = "flex flex-col items-start text-left p-3 rounded-lg border border-gray-850 bg-gray-950/60 hover:bg-gray-800/40 transition-all duration-200 cursor-pointer focus:outline-none w-full";
-        btn.onclick = () => toggleEffect(pedal.id);
-        btn.innerHTML = `
-          <div class="flex items-center gap-2">
-            <span class="indicator w-2 h-2 rounded-full bg-gray-700 transition-colors"></span>
-            <span class="font-mono text-xs font-bold text-gray-200">${pedal.name}</span>
-          </div>
-        `;
-        effectsContainer.appendChild(btn);
-      });
+    <!-- Footer Branding -->
+    <footer class="w-full max-w-5xl mx-auto px-6 py-6 border-t border-zinc-900 text-center font-mono text-[10px] text-zinc-600 uppercase tracking-widest">
+        Be Your Own Pillar. Build Your Own Algorithm. &copy; 2026 BESTOFCREWS.COM
+    </footer>
 
-      updateOutput();
-    }
+    <!-- Interactive JS Functionality -->
+    <script>
+        function updateProgress() {
+            const steps = ['step1', 'step2', 'step3', 'step4', 'step5'];
+            let checkedCount = 0;
 
-    function toggleCreative(id) {
-      activeCreativeId = (activeCreativeId === id) ? null : id;
-      creativePack.forEach(pedal => {
-        const el = document.getElementById(`creative-${pedal.id}`);
-        const indicator = el.querySelector(".indicator");
-        if (pedal.id === activeCreativeId) {
-          el.classList.add("border-orange-500/80", "bg-orange-950/20");
-          indicator.classList.remove("bg-gray-700");
-          indicator.classList.add("bg-orange-500");
-        } else {
-          el.classList.remove("border-orange-500/80", "bg-orange-950/20");
-          indicator.classList.remove("bg-orange-500");
-          indicator.classList.add("bg-gray-700");
+            steps.forEach(stepId => {
+                const checkbox = document.getElementById(stepId);
+                const card = document.getElementById(`${stepId}-card`);
+                
+                if (checkbox.checked) {
+                    checkedCount++;
+                    card.style.borderColor = '#FF5500';
+                    card.style.opacity = '0.75';
+                } else {
+                    card.style.borderColor = '';
+                    card.style.opacity = '1';
+                }
+            });
+
+            const percent = Math.round((checkedCount / steps.length) * 100);
+            
+            // Update visual trackers
+            const bar = document.getElementById('progressBar');
+            const text = document.getElementById('progressText');
+            
+            bar.style.width = `${percent}%`;
+            
+            if (percent === 100) {
+                text.textContent = 'DEPLOYED & SECURE // 100%';
+                text.style.color = '#00FF66';
+                bar.style.backgroundColor = '#00FF66';
+            } else {
+                text.textContent = `${percent}% Complete`;
+                text.style.color = '#FF5500';
+                bar.style.backgroundColor = '#FF5500';
+            }
         }
-      });
-      updateOutput();
-    }
 
-    function toggleAnalytic(id) {
-      activeAnalyticId = (activeAnalyticId === id) ? null : id;
-      analyticPack.forEach(pedal => {
-        const el = document.getElementById(`analytic-${pedal.id}`);
-        const indicator = el.querySelector(".indicator");
-        if (pedal.id === activeAnalyticId) {
-          el.classList.add("border-purple-500/80", "bg-purple-950/20");
-          indicator.classList.remove("bg-gray-700");
-          indicator.classList.add("bg-purple-500");
-        } else {
-          el.classList.remove("border-purple-500/80", "bg-purple-950/20");
-          indicator.classList.remove("bg-purple-500");
-          indicator.classList.add("bg-gray-700");
+        function copyToClipboard(inputId, buttonId) {
+            const input = document.getElementById(inputId);
+            input.select();
+            input.setSelectionRange(0, 99999); // For mobile devices
+            document.execCommand('copy');
+
+            const btn = document.getElementById(buttonId);
+            const originalText = btn.textContent;
+            btn.textContent = 'COPIED!';
+            btn.style.backgroundColor = '#FF5500';
+
+            setTimeout(() => {
+                btn.textContent = originalText;
+                btn.style.backgroundColor = '';
+            }, 1500);
         }
-      });
-      updateOutput();
-    }
-
-    function toggleEffect(id) {
-      activeEffectId = (activeEffectId === id) ? null : id;
-      effectsPack.forEach(pedal => {
-        const el = document.getElementById(`effect-${pedal.id}`);
-        const indicator = el.querySelector(".indicator");
-        if (pedal.id === activeEffectId) {
-          el.classList.add("border-blue-500/80", "bg-blue-950/20");
-          indicator.classList.remove("bg-gray-700");
-          indicator.classList.add("bg-blue-500");
-        } else {
-          el.classList.remove("border-blue-500/80", "bg-blue-950/20");
-          indicator.classList.remove("bg-blue-500");
-          indicator.classList.add("bg-gray-700");
-        }
-      });
-      updateOutput();
-    }
-
-    function buildPrompt() {
-      const rawText = document.getElementById("raw-input").value.trim();
-      const creative = creativePack.find(p => p.id === activeCreativeId);
-      const analytic = analyticPack.find(p => p.id === activeAnalyticId);
-      const effect = effectsPack.find(p => p.id === activeEffectId);
-      let parts = [];
-      if (creative) parts.push(creative.prompt);
-      if (analytic) parts.push(analytic.prompt);
-      if (rawText) parts.push(rawText);
-      if (effect) parts.push(effect.prompt);
-      return parts.join("\n\n");
-    }
-
-    function updateOutput() {
-      const rawText = document.getElementById("raw-input").value;
-      document.getElementById("char-count").innerText = `${rawText.length} chars`;
-      const previewContainer = document.getElementById("output-preview");
-      const creative = creativePack.find(p => p.id === activeCreativeId);
-      const analytic = analyticPack.find(p => p.id === activeAnalyticId);
-      const effect = effectsPack.find(p => p.id === activeEffectId);
-
-      let html = "";
-      if (creative) {
-        html += `<div class="p-2 bg-orange-950/20 border-l-2 border-orange-500 rounded"><span class="text-orange-400 font-bold block mb-1 text-[10px]">[CREATIVE: ${creative.name.toUpperCase()}]</span>${creative.prompt}</div>`;
-      }
-      if (analytic) {
-        html += `<div class="p-2 bg-purple-950/20 border-l-2 border-purple-500 rounded"><span class="text-purple-400 font-bold block mb-1 text-[10px]">[ANALYTIC: ${analytic.name.toUpperCase()}]</span>${analytic.prompt}</div>`;
-      }
-      if (rawText.trim()) {
-        html += `<div class="p-2 bg-gray-900/40 border-l-2 border-gray-600 rounded"><span class="text-gray-400 font-bold block mb-1 text-[10px]">[INPUT CONCEPT]</span>${rawText}</div>`;
-      } else {
-        html += `<div class="p-2 border-l-2 border-dashed border-gray-800 text-gray-600 italic">Waiting for raw concept...</div>`;
-      }
-      if (effect) {
-        html += `<div class="p-2 bg-blue-950/20 border-l-2 border-blue-500 rounded"><span class="text-blue-400 font-bold block mb-1 text-[10px]">[EFFECT: ${effect.name.toUpperCase()}]</span>${effect.prompt}</div>`;
-      }
-      previewContainer.innerHTML = html || "<span class='text-gray-650 italic'>Route a signal to preview payload.</span>";
-    }
-
-    function clearAll() {
-      document.getElementById("raw-input").value = "";
-      activeCreativeId = null;
-      activeAnalyticId = null;
-      activeEffectId = null;
-      document.querySelectorAll("[id^='creative-']").forEach(el => {
-        el.classList.remove("border-orange-500/80", "bg-orange-950/20");
-        el.querySelector(".indicator").className = "indicator w-2 h-2 rounded-full bg-gray-700 transition-colors";
-      });
-      document.querySelectorAll("[id^='analytic-']").forEach(el => {
-        el.classList.remove("border-purple-500/80", "bg-purple-950/20");
-        el.querySelector(".indicator").className = "indicator w-2 h-2 rounded-full bg-gray-700 transition-colors";
-      });
-      document.querySelectorAll("[id^='effect-']").forEach(el => {
-        el.classList.remove("border-blue-500/80", "bg-blue-950/20");
-        el.querySelector(".indicator").className = "indicator w-2 h-2 rounded-full bg-gray-700 transition-colors";
-      });
-      updateOutput();
-    }
-
-    function copyToClipboard() {
-      const fullText = buildPrompt();
-      const btn = document.getElementById("copy-btn");
-      const originalHTML = btn.innerHTML;
-
-      // Primary copy method
-      if (navigator.clipboard && window.isSecureContext) {
-        navigator.clipboard.writeText(fullText).then(() => showSuccess(btn, originalHTML), () => fallbackCopy(fullText, btn, originalHTML));
-      } else {
-        fallbackCopy(fullText, btn, originalHTML);
-      }
-    }
-
-    function fallbackCopy(text, btn, originalHTML) {
-      const textArea = document.createElement("textarea");
-      textArea.value = text;
-      textArea.style.position = "fixed";
-      textArea.style.opacity = "0";
-      document.body.appendChild(textArea);
-      textArea.focus();
-      textArea.select();
-      try {
-        document.execCommand('copy');
-        showSuccess(btn, originalHTML);
-      } catch (err) {
-        alert("Oops, unable to copy. Please manually select the text from the preview box and copy.");
-      }
-      document.body.removeChild(textArea);
-    }
-
-    function showSuccess(btn, originalHTML) {
-      btn.innerHTML = `<span>✓</span> COPIED!`;
-      btn.className = "mt-4 w-full bg-emerald-500 text-white font-mono font-bold py-4 px-6 rounded-lg transition-all scale-[1.02] flex items-center justify-center gap-3";
-      setTimeout(() => {
-        btn.innerHTML = originalHTML;
-        btn.className = "mt-4 w-full bg-emerald-600 hover:bg-emerald-500 active:scale-[0.98] text-white font-mono font-bold py-4 px-6 rounded-lg transition-all shadow-lg shadow-emerald-900/30 flex items-center justify-center gap-3";
-      }, 1200);
-    }
-
-    init();
-  </script>
+    </script>
 </body>
 </html>
