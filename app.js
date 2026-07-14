@@ -15,143 +15,29 @@ const buildLogs = [
     "Load-in successful. Ground-anchors set and inspected."
 ];
 
-// --- CREW GATE AUTHENTICATION SYSTEM ---
-let isRegisterMode = false;
-let currentUser = null;
+// Session Check
+const currentUser = localStorage.getItem('activeCrewMember');
 
-// DOM Elements for Auth
-const loginPortal = document.getElementById('login-portal');
-const appContainer = document.getElementById('app');
-const portalForm = document.getElementById('portalForm');
-const usernameInput = document.getElementById('username');
-const passwordInput = document.getElementById('password');
-const submitBtn = document.getElementById('submitBtn');
-const toggleModeLink = document.getElementById('toggleMode');
-const toggleText = document.getElementById('toggleText');
-const portalFeedback = document.getElementById('portalFeedback');
-
-// Check if a user is already logged in on page load
-window.addEventListener('DOMContentLoaded', () => {
-    const savedUser = localStorage.getItem('activeCrewMember');
-    if (savedUser) {
-        currentUser = savedUser;
-        showApp();
-    }
-});
-
-// Toggle between Login and Register Mode
-toggleModeLink.addEventListener('click', (e) => {
-    e.preventDefault();
-    isRegisterMode = !isRegisterMode;
-    portalFeedback.textContent = ''; // Clear errors
-    portalFeedback.className = 'feedback-msg';
-
-    if (isRegisterMode) {
-        document.querySelector('.portal-header h2').textContent = '🚧 REGISTER NEW CREW';
-        submitBtn.textContent = 'CREATE ACCOUNT';
-        toggleText.innerHTML = 'Already in the crew? <a href="#" id="toggleMode">Sign In</a>';
-    } else {
-        document.querySelector('.portal-header h2').textContent = '⚠️ CREW ACCESS REQUIRED';
-        submitBtn.textContent = 'AUTHENTICATE';
-        toggleText.innerHTML = 'New to the crew? <a href="#" id="toggleMode">Create an Account</a>';
-    }
-
-    // Re-bind the event listener to the newly rendered link
-    document.getElementById('toggleMode').addEventListener('click', arguments.callee);
-});
-
-// Form Submission (Login/Register)
-portalForm.addEventListener('submit', (e) => {
-    e.preventDefault();
-    const username = usernameInput.value.trim();
-    const password = passwordInput.value;
-
-    if (!username || !password) return;
-
-    // Fetch existing crews database from LocalStorage
-    const crewDB = JSON.parse(localStorage.getItem('crewDatabase')) || {};
-
-    if (isRegisterMode) {
-        // Registration Logic
-        if (crewDB[username.toLowerCase()]) {
-            showFeedback("Crew Handle already taken!", "error");
-        } else {
-            // Save new user
-            crewDB[username.toLowerCase()] = { username: username, password: password };
-            localStorage.setItem('crewDatabase', JSON.stringify(crewDB));
-            showFeedback("Registration successful! Authenticating...", "success");
-            
-            setTimeout(() => {
-                loginUser(username);
-            }, 1000);
-        }
-    } else {
-        // Login Logic
-        const account = crewDB[username.toLowerCase()];
-        if (account && account.password === password) {
-            showFeedback("Access Granted. Loading workspace...", "success");
-            setTimeout(() => {
-                loginUser(account.username);
-            }, 1000);
-        } else {
-            showFeedback("Access Denied. Check handle or passcode.", "error");
-        }
-    }
-});
-
-function loginUser(username) {
-    currentUser = username;
-    localStorage.setItem('activeCrewMember', username);
-    showApp();
-}
-
-function showApp() {
-    loginPortal.classList.add('hidden');
-    appContainer.classList.remove('hidden');
-    
-    // Welcome message in the console
-    console.log(`%c Welcome back, ${currentUser}! Access Authorized. `, 'background: #f39c12; color: #000; font-weight: bold;');
-}
-
+// Logout function redirects back to our login page
 function logout() {
     localStorage.removeItem('activeCrewMember');
-    currentUser = null;
-    
-    // Reset forms
-    portalForm.reset();
-    portalFeedback.textContent = '';
-    
-    // Hide App & Show Gate
-    appContainer.classList.add('hidden');
-    loginPortal.classList.remove('hidden');
+    window.location.href = 'login.html';
 }
-
-function showFeedback(message, type) {
-    portalFeedback.textContent = message;
-    portalFeedback.className = `feedback-msg ${type}`;
-}
-
 
 // --- SPATIAL CANVAS MODULE GENERATOR ---
-
-// Function to add a new card/module to the spatial canvas
 function addModule(type) {
     const canvas = document.getElementById('canvas');
-    
-    // Create the card container
     const card = document.createElement('div');
     card.classList.add('canvas-card');
     
-    // Generate randomized sizes so the grid looks organic and dynamic
-    const columnSpan = Math.floor(Math.random() * 2) + 1; // Spans 1 or 2 columns
-    const rowSpan = Math.floor(Math.random() * 2) + 1;    // Spans 1 or 2 rows
+    const columnSpan = Math.floor(Math.random() * 2) + 1; 
+    const rowSpan = Math.floor(Math.random() * 2) + 1;    
     card.style.gridColumn = `span ${columnSpan}`;
     card.style.gridRow = `span ${rowSpan}`;
     
     let headerText = '';
     let bodyHTML = '';
     
-    // Determine card content based on type
     if (type === 'photo') {
         headerText = '📸 Crew Photo';
         bodyHTML = `
@@ -169,7 +55,6 @@ function addModule(type) {
         bodyHTML = `<p><strong>Status:</strong> ${randomLog}</p>`;
     }
     
-    // Set the internal HTML with a delete button
     card.innerHTML = `
         <div class="card-header" style="display: flex; justify-content: space-between; align-items: center;">
             <span>${headerText}</span>
@@ -180,26 +65,22 @@ function addModule(type) {
         </div>
     `;
     
-    // Append the new card to the spatial canvas
     canvas.appendChild(card);
 }
 
 // --- INTERACTIVE BREAKROOM CHAT ---
-
 const chatForm = document.getElementById('chatForm');
 const chatInput = document.getElementById('chatInput');
 const chatStream = document.getElementById('chatStream');
 
 chatForm.addEventListener('submit', function(e) {
-    e.preventDefault(); // Stop page from reloading on form submit
+    e.preventDefault();
     
     const messageText = chatInput.value.trim();
     if (messageText === '') return;
 
-    // Use logged in user's name, fallback to Guest if null
     const sender = currentUser || "Guest";
     
-    // Create new chat elements
     const tagSpan = document.createElement('span');
     tagSpan.classList.add('chat-tag');
     tagSpan.textContent = `[${sender}]:`;
@@ -210,15 +91,12 @@ chatForm.addEventListener('submit', function(e) {
     dividerSpan.classList.add('divider');
     dividerSpan.textContent = '|';
 
-    // Append to the stream
     chatStream.appendChild(tagSpan);
     chatStream.appendChild(msgSpan);
     chatStream.appendChild(dividerSpan);
 
-    // Clear input field
     chatInput.value = '';
 
-    // Automatically scroll the stream container to the end to show the newest message
     const container = chatStream.parentElement;
     container.scrollLeft = container.scrollWidth;
 });
