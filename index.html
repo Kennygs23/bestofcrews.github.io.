@@ -4,42 +4,20 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Best Of Crews | Canvas</title>
+    
+    <!-- Security Check: If not logged in, immediately redirect to login.html -->
+    <script>
+        if (!localStorage.getItem('activeCrewMember')) {
+            window.location.href = 'login.html';
+        }
+    </script>
+
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
 
-    <!-- 🚧 CREW GATE (Login / Registration Portal Overlay) -->
-    <div id="login-portal" class="portal-overlay">
-        <div class="portal-card">
-            <div class="portal-header">
-                <h2>⚠️ CREW ACCESS REQUIRED</h2>
-                <p>Authorized Personnel Only</p>
-            </div>
-            
-            <div class="portal-body">
-                <form id="portalForm">
-                    <div class="input-group">
-                        <label for="username">CREW NAME / HANDLE</label>
-                        <input type="text" id="username" placeholder="e.g., Ken_G" required autocomplete="off">
-                    </div>
-                    <div class="input-group">
-                        <label for="password">ACCESS PASSCODE</label>
-                        <input type="password" id="password" placeholder="••••••••" required>
-                    </div>
-                    
-                    <button type="submit" id="submitBtn" class="portal-btn">AUTHENTICATE</button>
-                </form>
-            </div>
-
-            <div class="portal-footer">
-                <p id="toggleText">New to the crew? <a href="#" id="toggleMode">Create an Account</a></p>
-                <div id="portalFeedback" class="feedback-msg"></div>
-            </div>
-        </div>
-    </div>
-
-    <!-- MAIN APP CONTAINER (Hidden with class="hidden" until logged in) -->
-    <div class="app-container hidden" id="app">
+    <!-- MAIN APP CONTAINER (No more .hidden class required on load!) -->
+    <div class="app-container" id="app">
         
         <!-- TOOL BOX (Sidebar Utility) -->
         <aside class="toolbox">
@@ -65,7 +43,6 @@
 
         <!-- MAIN SPATIAL CANVAS -->
         <main class="spatial-canvas" id="canvas">
-            <!-- Modular cards will be dynamically injected or dragged here -->
             <div class="canvas-card" style="grid-column: span 2; grid-row: span 2;">
                 <div class="card-header">🚀 Active Project: What do you have in mind?</div>
                 <div class="card-body">
@@ -85,7 +62,6 @@
         <footer class="breakroom">
             <div class="breakroom-label">☕ THE BREAKROOM:</div>
             
-            <!-- The scrolling stream container -->
             <div class="breakroom-stream-container">
                 <div class="breakroom-stream" id="chatStream">
                     <span class="chat-tag">[Social]:</span> Banter? Whats the vibes? <span class="divider">|</span>
@@ -94,7 +70,6 @@
                 </div>
             </div>
 
-            <!-- Chat input form -->
             <form class="breakroom-form" id="chatForm">
                 <input type="text" id="chatInput" placeholder="Type banter here..." autocomplete="off" required>
                 <button type="submit">SEND</button>
