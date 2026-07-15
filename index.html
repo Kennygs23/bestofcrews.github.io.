@@ -46,6 +46,286 @@
     <button class="p-btn-clear" onclick="clearHistory()">Clear History</button>
   </div>
 </div>
+                <!-- START OF INTERACTIVE PROJECT NOTES MODULE -->
+<div class="interactive-notes-card">
+  <h3>Active Project Log</h3>
+  
+  <!-- Note Input Area -->
+  <div class="note-input-wrapper">
+    <label for="newNoteContent">NEW LOG ENTRY</label>
+    <textarea id="newNoteContent" placeholder="Type a project note, material status, or crew update..."></textarea>
+    
+    <!-- Hidden input to track if we are editing an existing note -->
+    <input type="hidden" id="editingNoteId" value="">
+    
+    <button id="submitNoteBtn" class="canvas-btn btn-add" onclick="handleSubmitNote()">Add Note</button>
+  </div>
+
+  <hr class="card-divider">
+
+  <!-- Active Log List -->
+  <div class="log-stream-section">
+    <h4>Timeline History</h4>
+    <div id="notesTimeline" class="timeline-container">
+      <!-- Dynamic interactive notes drop here -->
+    </div>
+  </div>
+</div>
+
+<style>
+  .interactive-notes-card {
+    background: #121212;
+    border: 2px solid #ff5500;
+    border-radius: 6px;
+    padding: 16px;
+    color: #ffffff;
+    font-family: monospace;
+    margin-top: 15px;
+    box-sizing: border-box;
+  }
+  .interactive-notes-card h3, .interactive-notes-card h4 {
+    margin: 0 0 12px 0;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+  }
+  .interactive-notes-card h3 {
+    font-size: 1.1rem;
+    color: #fff;
+    border-bottom: 1px solid #222;
+    padding-bottom: 6px;
+  }
+  .interactive-notes-card h4 {
+    font-size: 0.85rem;
+    color: #aaa;
+  }
+  .note-input-wrapper {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+  }
+  .note-input-wrapper label {
+    font-size: 0.8rem;
+    color: #ff5500;
+    font-weight: bold;
+  }
+  .note-input-wrapper textarea {
+    background: #1a1a1a;
+    border: 1px solid #333;
+    border-radius: 4px;
+    color: #fff;
+    padding: 10px;
+    font-family: sans-serif;
+    font-size: 0.9rem;
+    resize: vertical;
+    min-height: 70px;
+  }
+  .note-input-wrapper textarea:focus {
+    outline: none;
+    border-color: #ff5500;
+  }
+  .canvas-btn {
+    padding: 8px 16px;
+    font-weight: bold;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    text-transform: uppercase;
+    font-size: 0.8rem;
+    align-self: flex-end;
+    transition: background 0.2s;
+  }
+  .btn-add { background: #ff5500; color: white; }
+  .btn-add:hover { background: #e04b00; }
+  .btn-update { background: #28a745; color: white; }
+  .btn-update:hover { background: #218838; }
+  
+  .card-divider {
+    border: 0;
+    border-top: 1px solid #222;
+    margin: 15px 0;
+  }
+  .timeline-container {
+    max-height: 250px;
+    overflow-y: auto;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    padding-right: 4px;
+  }
+  
+  /* Individual Note Styling */
+  .note-item {
+    background: #1a1a1a;
+    border-left: 3px solid #ff5500;
+    border-radius: 0 4px 4px 0;
+    padding: 10px;
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+  }
+  .note-meta {
+    display: flex;
+    justify-content: space-between;
+    font-size: 0.75rem;
+    color: #666;
+    border-bottom: 1px solid #262626;
+    padding-bottom: 4px;
+  }
+  .note-timestamp { color: #888; }
+  .note-body {
+    font-family: sans-serif;
+    font-size: 0.9rem;
+    color: #ddd;
+    white-space: pre-wrap;
+    word-break: break-word;
+  }
+  .note-controls {
+    display: flex;
+    justify-content: flex-end;
+    gap: 10px;
+    margin-top: 4px;
+  }
+  .ctrl-btn {
+    background: transparent;
+    border: none;
+    color: #666;
+    font-size: 0.75rem;
+    cursor: pointer;
+    font-family: monospace;
+    text-transform: uppercase;
+    padding: 2px 4px;
+  }
+  .ctrl-btn-edit:hover { color: #28a745; }
+  .ctrl-btn-del:hover { color: #dc3545; }
+</style>
+
+<script>
+  // Initial draw loop when system fires up
+  document.addEventListener("DOMContentLoaded", () => {
+    renderNotesTimeline();
+  });
+
+  // Handles adding new logs or submitting updates to old ones
+  function handleSubmitNote() {
+    const textarea = document.getElementById("newNoteContent");
+    const editIdInput = document.getElementById("editingNoteId");
+    const noteText = textarea.value.trim();
+    
+    if (!noteText) return alert("Cannot submit an empty log entry.");
+
+    let savedNotes = JSON.parse(localStorage.getItem("canvas_project_notes")) || [];
+    const activeEditId = editIdInput.value;
+
+    if (activeEditId) {
+      // 5 Steps Ahead Logic: Find target item and modify text inline
+      savedNotes = savedNotes.map(note => {
+        if (note.id === parseInt(activeEditId)) {
+          note.text = noteText;
+          note.edited = true; // Mark as edited
+        }
+        return note;
+      });
+      
+      // Reset interface configurations
+      editIdInput.value = "";
+      document.getElementById("submitNoteBtn").innerText = "Add Note";
+      document.getElementById("submitNoteBtn").className = "canvas-btn btn-add";
+    } else {
+      // Build a fresh timestamped entity block
+      const now = new Date();
+      const timestampString = now.toLocaleDateString() + " @ " + now.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+      
+      const freshNote = {
+        id: Date.now(), // Unique tracker
+        text: noteText,
+        time: timestampString,
+        edited: false
+      };
+      
+      savedNotes.unshift(freshNote); // Push structural priority to top
+    }
+
+    localStorage.setItem("canvas_project_notes", JSON.stringify(savedNotes));
+    textarea.value = "";
+    renderNotesTimeline();
+  }
+
+  // Visualizes current arrays into physical HTML timeline elements
+  function renderNotesTimeline() {
+    const notes = JSON.parse(localStorage.getItem("canvas_project_notes")) || [];
+    const container = document.getElementById("notesTimeline");
+    container.innerHTML = "";
+
+    if (notes.length === 0) {
+      container.innerHTML = "<div style='color:#444; font-size:0.85rem; text-align:center; padding:20px;'>No active timeline history entries.</div>";
+      return;
+    }
+
+    notes.forEach(note => {
+      const noteElement = document.createElement("div");
+      noteElement.className = "note-item";
+      
+      noteElement.innerHTML = `
+        <div class="note-meta">
+          <span class="note-timestamp">${note.time} ${note.edited ? '(EDITED)' : ''}</span>
+        </div>
+        <div class="note-body">${escapeHTML(note.text)}</div>
+        <div class="note-controls">
+          <button class="ctrl-btn ctrl-btn-edit" onclick="triggerEditNote(${note.id})">Edit</button>
+          <button class="ctrl-btn ctrl-btn-del" onclick="triggerDeleteNote(${note.id})">Delete</button>
+        </div>
+      `;
+      container.appendChild(noteElement);
+    });
+  }
+
+  // Pre-populates main prompt form with data payload to perform clean revisions
+  function triggerEditNote(noteId) {
+    const notes = JSON.parse(localStorage.getItem("canvas_project_notes")) || [];
+    const targetNote = notes.find(n => n.id === noteId);
+    
+    if (!targetNote) return;
+
+    // Direct values into editing dashboard panels
+    document.getElementById("newNoteContent").value = targetNote.text;
+    document.getElementById("editingNoteId").value = targetNote.id;
+    
+    // Shift layout buttons into update configurations
+    const submitBtn = document.getElementById("submitNoteBtn");
+    submitBtn.innerText = "Update Entry";
+    submitBtn.className = "canvas-btn btn-update";
+    
+    document.getElementById("newNoteContent").focus();
+  }
+
+  // Targets structural logs for deletion execution
+  function triggerDeleteNote(noteId) {
+    if (!confirm("Permanently erase this timeline log entry?")) return;
+
+    let notes = JSON.parse(localStorage.getItem("canvas_project_notes")) || [];
+    notes = notes.filter(n => n.id !== noteId);
+    
+    localStorage.setItem("canvas_project_notes", JSON.stringify(notes));
+    
+    // Reset inputs if you delete an item you are actively modifying
+    if (document.getElementById("editingNoteId").value == noteId) {
+      document.getElementById("editingNoteId").value = "";
+      document.getElementById("newNoteContent").value = "";
+      document.getElementById("submitNoteBtn").innerText = "Add Note";
+      document.getElementById("submitNoteBtn").className = "canvas-btn btn-add";
+    }
+
+    renderNotesTimeline();
+  }
+
+  // Prevents layout injections or text rendering issues
+  function escapeHTML(str) {
+    return str.replace(/[&<>'"]/g, 
+      tag => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', "'": '&#39;', '"': '&quot;' }[tag] || tag)
+    );
+  }
+</script>
+<!-- END OF INTERACTIVE PROJECT NOTES MODULE -->
                 <!-- START OF LOGS & NOTES MODULE -->
 <div class="crew-logs-card">
   <h3>Crew Workspace Logs</h3>
