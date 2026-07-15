@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Best Of Crews | Canvas</title>
     
-    <!-- Security Check: If not logged in, immediately redirect back to login.html -->
+    <!-- Security Check -->
     <script>
         if (!localStorage.getItem('activeCrewMember')) {
             window.location.href = 'login.html';
@@ -22,214 +22,354 @@
         <!-- TOOL BOX (Sidebar Utility) -->
         <aside class="toolbox">
             <div class="toolbox-header">
-                <h3>🛠️ TOOL BOX</h3>
+                <h3>⚡ SYSTEM UTILITIES</h3>
             </div>
             
             <div class="toolbox-section">
-                <h4>Add to Canvas</h4>
-                <button class="tool-btn" onclick="addModule('photo')">+ Photo Card</button>
-                <button class="tool-btn" onclick="addModule('notes')">+ Crew Note</button>
-                <button class="tool-btn" onclick="addModule('build')">+ Build Log</button>
+                <h4>Canvas Layout Actions</h4>
+                <div class="action-grid">
+                    <button class="tool-btn" onclick="addModule('photo')">+ Photo</button>
+                    <button class="tool-btn" onclick="addModule('notes')">+ Note</button>
+                    <button class="tool-btn" onclick="addModule('build')">+ Log</button>
+                </div>
             </div>
 
-            <!-- START OF PUNCH CLOCK MODULE -->
-            <div class="punch-clock-card">
-                <h3>Crew Punch Clock</h3>
-                <div class="timer-digits" id="timerDisplay">00:00:00</div>
-                <div class="status-msg" id="statusIndicator">Status: Clocked Out</div>
+            <!-- SPACE MANAGEMENT: ACCORDION CONTAINER -->
+            <div class="accordion-container">
                 
-                <div class="clock-btn-row">
-                    <button id="clockInBtn" class="p-btn p-btn-go" onclick="clockIn()">Clock In</button>
-                    <button id="clockOutBtn" class="p-btn p-btn-stop" onclick="clockOut()" disabled>Clock Out</button>
-                </div>
+                <!-- PANEL 1: PUNCH CLOCK -->
+                <div class="accordion-item active">
+                    <button class="accordion-trigger" onclick="toggleAccordion(this)">
+                        <span>⏱️ CREW PUNCH CLOCK</span>
+                        <span class="arrow">▼</span>
+                    </button>
+                    <div class="accordion-content">
+                        <div class="punch-clock-card">
+                            <div class="timer-digits" id="timerDisplay">00:00:00</div>
+                            <div class="status-msg" id="statusIndicator">Status: Standby</div>
+                            
+                            <div class="clock-btn-row">
+                                <button id="clockInBtn" class="p-btn p-btn-go" onclick="clockIn()">Clock In</button>
+                                <button id="clockOutBtn" class="p-btn p-btn-stop" onclick="clockOut()" disabled>Clock Out</button>
+                            </div>
 
-                <div class="clock-history">
-                    <h4>Shift History</h4>
-                    <ul id="shiftList"></ul>
-                    <button class="p-btn-clear" onclick="clearHistory()">Clear History</button>
-                </div>
-            </div>
-            <!-- END OF PUNCH CLOCK MODULE -->
-
-            <!-- DASHBOARD QUICK GLANCE BULLET-POINT DISPLAY -->
-            <div class="dash-project-widget">
-                <div class="widget-header">
-                    <h3>Active Project Feed</h3>
-                    <a href="projects.html" class="widget-link">Manage →</a>
-                </div>
-                <ul id="dashNotesBulletList" class="dash-bullet-list">
-                    <!-- Automated bullet points load here from projects.html -->
-                </ul>
-            </div>
-
-            <!-- START OF STATIC LOGS & NOTES MODULE -->
-            <div class="crew-logs-card">
-                <h3>Crew Workspace Logs</h3>
-                
-                <!-- Crew Note Section -->
-                <div class="log-group">
-                    <label for="crewNoteInput">CREW NOTE</label>
-                    <textarea id="crewNoteInput" placeholder="Enter crew assignments or safety reminders..."></textarea>
-                    <div class="log-actions">
-                        <span id="noteSavedStatus" class="status-indicator"></span>
-                        <button class="log-btn log-btn-save" onclick="saveCrewNote()">Save Note</button>
+                            <div class="clock-history">
+                                <h4>Shift Logs</h4>
+                                <ul id="shiftList"></ul>
+                                <button class="p-btn-clear" onclick="clearHistory()">Purge Records</button>
+                            </div>
+                        </div>
                     </div>
                 </div>
 
-                <hr class="log-divider">
-
-                <!-- Build Log Section -->
-                <div class="log-group">
-                    <label for="buildLogInput">DAILY BUILD LOG</label>
-                    <textarea id="buildLogInput" placeholder="Track structural progress or fabrication updates..."></textarea>
-                    <div class="log-actions">
-                        <span id="logSavedStatus" class="status-indicator"></span>
-                        <button class="log-btn log-btn-save" onclick="saveBuildLog()">Save Log</button>
+                <!-- PANEL 2: PROJECT FEED -->
+                <div class="accordion-item">
+                    <button class="accordion-trigger" onclick="toggleAccordion(this)">
+                        <span>📊 ACTIVE PROJECT FEED</span>
+                        <span class="arrow">►</span>
+                    </button>
+                    <div class="accordion-content">
+                        <div class="dash-project-widget">
+                            <div class="widget-header">
+                                <h4>Timeline Overview</h4>
+                                <a href="projects.html" class="widget-link">Manage →</a>
+                            </div>
+                            <ul id="dashNotesBulletList" class="dash-bullet-list">
+                                <!-- Loaded dynamically -->
+                            </ul>
+                        </div>
                     </div>
                 </div>
-            </div>
-            <!-- END OF LOGS & NOTES MODULE -->
 
-            <div class="toolbox-section">
+                <!-- PANEL 3: QUICK LOGS -->
+                <div class="accordion-item">
+                    <button class="accordion-trigger" onclick="toggleAccordion(this)">
+                        <span>📝 QUICK WORKSPACE LOGS</span>
+                        <span class="arrow">►</span>
+                    </button>
+                    <div class="accordion-content">
+                        <div class="crew-logs-card">
+                            <div class="log-group">
+                                <label for="crewNoteInput">CREW NOTE</label>
+                                <textarea id="crewNoteInput" maxlength="250" oninput="checkChars(this, 'noteCount')" placeholder="Active assignments..."></textarea>
+                                <div class="log-actions">
+                                    <span class="char-counter"><span id="noteCount">0</span>/250</span>
+                                    <span id="noteSavedStatus" class="status-indicator"></span>
+                                    <button class="log-btn log-btn-save" onclick="saveCrewNote()">Save</button>
+                                </div>
+                            </div>
+
+                            <hr class="log-divider">
+
+                            <div class="log-group">
+                                <label for="buildLogInput">DAILY BUILD LOG</label>
+                                <textarea id="buildLogInput" maxlength="250" oninput="checkChars(this, 'logCount')" placeholder="Fabrication tracking..."></textarea>
+                                <div class="log-actions">
+                                    <span class="char-counter"><span id="logCount">0</span>/250</span>
+                                    <span id="logSavedStatus" class="status-indicator"></span>
+                                    <button class="log-btn log-btn-save" onclick="saveBuildLog()">Save</button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+            </div> <!-- END ACCORDION -->
+
+            <div class="toolbox-section basic-utils">
                 <h4>Quick Utilities</h4>
                 <button class="tool-btn utility">Calc / Scale</button>
                 <button class="tool-btn utility">Material Checklist</button>
             </div>
             
-            <!-- Dynamic Sign Out Button -->
-            <div class="toolbox-section" style="margin-top: auto; padding-top: 20px;">
-                <button class="tool-btn" onclick="logout()" style="border-color: #ff4d4d; color: #ff4d4d; background: rgba(255,77,77,0.05);">🔓 Sign Out</button>
+            <div class="toolbox-section" style="margin-top: auto; padding-top: 15px;">
+                <button class="tool-btn logout-btn" onclick="logout()">🔓 Terminal Disconnect</button>
             </div>
         </aside>
 
         <!-- MAIN SPATIAL CANVAS -->
         <main class="spatial-canvas" id="canvas">
             <div class="canvas-card" style="grid-column: span 2; grid-row: span 2;">
-                <div class="card-header">🚀 Active Project: What do you have in mind?</div>
+                <div class="card-header">🚀 Active Project Framework</div>
                 <div class="card-body">
-                    <p>Canvas section, Business and shop objectives</p>
+                    <p>Canvas space coordinates active. System standing by for structural modules.</p>
                 </div>
             </div>
             
             <div class="canvas-card">
-                <div class="card-header">📸 Load-In Shot</div>
+                <div class="card-header">📸 Load-In Feed</div>
                 <div class="card-body photo-placeholder">
-                    [ Crew Photo Upload ]
+                    [ Camera Feed Link Open ]
                 </div>
             </div>
         </main>
 
-       <!-- THE BREAKROOM (Footer / Interactive Banter Zone) -->
+        <!-- THE BREAKROOM -->
         <footer class="breakroom">
-            <div class="breakroom-label">☕ THE BREAKROOM:</div>
-            
+            <div class="breakroom-label">☕ COMMS STREAM:</div>
             <div class="breakroom-stream-container">
                 <div class="breakroom-stream" id="chatStream">
-                    <span class="chat-tag">[Social]:</span> Banter? Whats the vibes? <span class="divider">|</span>
-                    <span class="chat-tag">[Ken]:</span> Website Loading... <span class="divider">|</span>
-                    <span class="chat-tag">[Crew]:</span> Comment Section      <span class="divider">|</span>
+                    <span class="chat-tag">[Net]:</span> Interface color map updated successfully. <span class="divider">|</span>
                 </div>
             </div>
-
             <form class="breakroom-form" id="chatForm">
-                <input type="text" id="chatInput" placeholder="Type banter here..." autocomplete="off" required>
+                <input type="text" id="chatInput" placeholder="Transmit data..." autocomplete="off" required>
                 <button type="submit">SEND</button>
             </form>
         </footer>
 
     </div>
 
-    <!-- GLOBAL MODULE STYLES -->
+    <!-- THEME & ACCORDION SYSTEM STYLES -->
     <style>
-        /* Punch Clock System */
-        .punch-clock-card {
-            background: #121212;
-            border: 2px solid #ff5500;
-            border-radius: 6px;
-            padding: 16px;
-            color: #ffffff;
-            font-family: monospace;
-            margin-top: 15px;
-            box-sizing: border-box;
+        /* Chrome, Black, Neon Green Theme Variables */
+        :root {
+            --neon-green: #00ff66;
+            --neon-dim: #00993d;
+            --dark-bg: #0a0a0a;
+            --card-bg: #111111;
+            --chrome-border: linear-gradient(135deg, #777 0%, #333 50%, #fff 100%);
+            --chrome-bg: linear-gradient(180deg, #222 0%, #111 100%);
         }
-        .punch-clock-card h3 { margin: 0 0 10px 0; text-transform: uppercase; font-size: 1.1rem; color: #fff; }
-        .timer-digits { font-size: 2.5rem; font-weight: bold; text-align: center; color: #ff5500; margin: 10px 0; }
-        .status-msg { text-align: center; font-size: 0.8rem; color: #888; margin-bottom: 15px; text-transform: uppercase; }
-        .clock-btn-row { display: flex; gap: 8px; margin-bottom: 15px; }
-        .p-btn { flex: 1; padding: 10px; font-weight: bold; border: none; border-radius: 4px; cursor: pointer; text-transform: uppercase; }
-        .p-btn-go { background: #28a745; color: white; }
-        .p-btn-stop { background: #dc3545; color: white; }
-        .p-btn:disabled { background: #333; color: #666; cursor: not-allowed; }
-        .clock-history h4 { margin: 10px 0 5px 0; font-size: 0.9rem; color: #aaa; text-transform: uppercase; }
-        #shiftList { list-style: none; padding: 0; margin: 0 0 10px 0; max-height: 100px; overflow-y: auto; background: #1a1a1a; border-radius: 4px; }
-        #shiftList li { padding: 6px 10px; border-bottom: 1px solid #222; font-size: 0.8rem; display: flex; justify-content: space-between; }
-        .p-btn-clear { background: transparent; border: 1px solid #444; color: #777; font-size: 0.7rem; padding: 4px 8px; cursor: pointer; border-radius: 3px; }
-        .p-btn-clear:hover { color: #ff5500; border-color: #ff5500; }
 
-        /* Project Widget System */
-        .dash-project-widget {
-            background: #121212;
-            border: 2px solid #ff5500;
-            border-radius: 6px;
-            padding: 16px;
+        body {
+            background-color: var(--dark-bg);
             color: #ffffff;
-            font-family: monospace;
-            margin-top: 15px;
         }
-        .widget-header { display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid #222; padding-bottom: 8px; margin-bottom: 12px; }
-        .widget-header h3 { margin: 0; font-size: 1.1rem; text-transform: uppercase; }
-        .widget-link { color: #ff5500; text-decoration: none; font-size: 0.8rem; font-weight: bold; text-transform: uppercase; }
-        .widget-link:hover { text-decoration: underline; }
+
+        .toolbox {
+            background: var(--dark-bg);
+            border-right: 2px solid var(--neon-green);
+            box-shadow: 0 0 15px rgba(0, 255, 102, 0.1);
+        }
+
+        .toolbox-header h3 {
+            color: var(--neon-green);
+            text-shadow: 0 0 8px rgba(0, 255, 102, 0.4);
+        }
+
+        .action-grid {
+            display: flex;
+            gap: 5px;
+        }
+
+        .tool-btn {
+            background: #151515;
+            border: 1px solid #333;
+            color: #aaa;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+
+        .tool-btn:hover {
+            border-color: var(--neon-green);
+            color: var(--neon-green);
+            box-shadow: 0 0 8px rgba(0, 255, 102, 0.2);
+        }
+
+        /* Accordion Structure */
+        .accordion-container {
+            margin-top: 15px;
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+        }
+
+        .accordion-item {
+            border: 1px solid #222;
+            border-radius: 4px;
+            overflow: hidden;
+            background: var(--card-bg);
+        }
+
+        .accordion-item.active {
+            border-color: var(--neon-green);
+            box-shadow: 0 0 10px rgba(0, 255, 102, 0.05);
+        }
+
+        .accordion-trigger {
+            width: 100%;
+            background: var(--chrome-bg);
+            border: none;
+            padding: 10px 12px;
+            color: #fff;
+            font-family: monospace;
+            font-weight: bold;
+            text-align: left;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            cursor: pointer;
+            border-bottom: 1px solid #222;
+        }
+
+        .accordion-item.active .accordion-trigger {
+            color: var(--neon-green);
+            border-bottom: 1px solid rgba(0, 255, 102, 0.2);
+        }
+
+        .accordion-content {
+            max-height: 0;
+            overflow: hidden;
+            transition: max-height 0.25s ease-out;
+        }
+
+        .accordion-item.active .accordion-content {
+            max-height: 400px;
+            overflow-y: auto;
+        }
+
+        /* Modules Styling Rewrite */
+        .punch-clock-card, .dash-project-widget, .crew-logs-card {
+            padding: 12px;
+            background: transparent;
+            font-family: monospace;
+        }
+
+        .timer-digits {
+            font-size: 2.3rem;
+            text-align: center;
+            color: var(--neon-green);
+            text-shadow: 0 0 10px rgba(0, 255, 102, 0.3);
+            font-weight: bold;
+            margin: 5px 0;
+        }
+
+        .status-msg { text-align: center; font-size: 0.75rem; color: #666; text-transform: uppercase; margin-bottom: 10px;}
+
+        .clock-btn-row { display: flex; gap: 6px; }
+        .p-btn { flex: 1; padding: 8px; font-weight: bold; border: 1px solid #333; background: #161616; color: #fff; cursor: pointer; text-transform: uppercase; font-size: 0.75rem;}
+        .p-btn-go:hover:not(:disabled) { border-color: var(--neon-green); color: var(--neon-green); }
+        .p-btn-stop:hover:not(:disabled) { border-color: #ff3333; color: #ff3333; }
+        .p-btn:disabled { opacity: 0.2; cursor: not-allowed; }
+
+        .clock-history h4, .widget-header h4 { margin: 12px 0 6px 0; font-size: 0.8rem; color: #666; text-transform: uppercase; }
+        #shiftList { list-style: none; padding: 0; margin: 0 0 8px 0; background: #080808; border-radius: 3px; max-height: 80px; overflow-y: auto;}
+        #shiftList li { padding: 5px 8px; border-bottom: 1px solid #151515; font-size: 0.75rem; display: flex; justify-content: space-between; color: #ccc;}
+
+        .p-btn-clear { background: transparent; border: none; color: #444; font-size: 0.65rem; cursor: pointer; text-transform: uppercase; padding: 0;}
+        .p-btn-clear:hover { color: #ff3333; }
+
+        /* Project Widget Styling */
+        .widget-header { display: flex; justify-content: space-between; align-items: center; }
+        .widget-link { color: var(--neon-green); text-decoration: none; font-size: 0.75rem; text-transform: uppercase;}
         .dash-bullet-list { list-style: none; padding: 0; margin: 0; }
-        .dash-bullet-list li { position: relative; padding-left: 15px; margin-bottom: 8px; font-size: 0.9rem; color: #ddd; font-family: sans-serif; line-height: 1.4; }
-        .dash-bullet-list li::before { content: "▪"; position: absolute; left: 0; color: #ff5500; }
-        .dash-bullet-list .bullet-time { font-family: monospace; font-size: 0.75rem; color: #666; display: block; }
+        .dash-bullet-list li { position: relative; padding-left: 12px; margin-bottom: 6px; font-size: 0.8rem; color: #bbb; line-height: 1.3;}
+        .dash-bullet-list li::before { content: "›"; position: absolute; left: 0; color: var(--neon-green); font-weight: bold; }
+        .bullet-time { color: #555; font-size: 0.7rem; display: block; }
 
-        /* Workspace Logs System */
-        .crew-logs-card {
-            background: #121212;
-            border: 2px solid #ff5500;
-            border-radius: 6px;
-            padding: 16px;
-            color: #ffffff;
-            font-family: monospace;
-            margin-top: 15px;
-            box-sizing: border-box;
-        }
-        .crew-logs-card h3 { margin: 0 0 15px 0; text-transform: uppercase; font-size: 1.1rem; color: #fff; border-bottom: 1px solid #222; padding-bottom: 5px; }
-        .log-group { display: flex; flex-direction: column; gap: 6px; }
-        .log-group label { font-size: 0.85rem; color: #ff5500; font-weight: bold; letter-spacing: 1px; }
-        .log-group textarea { background: #1a1a1a; border: 1px solid #333; border-radius: 4px; color: #fff; padding: 10px; font-family: sans-serif; font-size: 0.9rem; resize: vertical; min-height: 80px; }
-        .log-group textarea:focus { outline: none; border-color: #ff5500; }
-        .log-actions { display: flex; justify-content: space-between; align-items: center; margin-top: 4px; }
-        .status-indicator { font-size: 0.75rem; transition: opacity 0.3s ease; }
-        .log-btn { padding: 6px 16px; font-weight: bold; border: none; border-radius: 4px; cursor: pointer; text-transform: uppercase; font-size: 0.8rem; }
-        .log-btn-save { background: #28a745; color: white; }
-        .log-btn-save:hover { background: #218838; }
-        .log-divider { border: 0; border-top: 1px solid #222; margin: 15px 0; }
+        /* Logs Styling */
+        .log-group { display: flex; flex-direction: column; gap: 4px; }
+        .log-group label { font-size: 0.75rem; color: var(--neon-green); font-weight: bold; }
+        .log-group textarea { background: #080808; border: 1px solid #222; color: #fff; padding: 8px; font-size: 0.8rem; resize: none; min-height: 50px; font-family: sans-serif; }
+        .log-group textarea:focus { outline: none; border-color: var(--neon-green); }
+        .log-actions { display: flex; justify-content: space-between; align-items: center; margin-top: 2px; }
+        .char-counter { font-size: 0.65rem; color: #444; }
+        .status-indicator { font-size: 0.7 orem; font-weight: bold; }
+        .log-btn-save { background: transparent; border: 1px solid var(--neon-green); color: var(--neon-green); padding: 3px 10px; font-size: 0.7rem; cursor: pointer; text-transform: uppercase;}
+        .log-btn-save:hover { background: rgba(0, 255, 102, 0.1); }
+        .log-divider { border: 0; border-top: 1px solid #222; margin: 10px 0; }
+
+        .logout-btn { border-color: #555; color: #888; width: 100%; padding: 8px; }
+        .logout-btn:hover { border-color: #ff3333 !important; color: #ff3333 !important; background: transparent !important; }
+
+        /* Spatial Canvas Adjustments */
+        .spatial-canvas { background: #050505; padding: 20px; }
+        .canvas-card { background: var(--card-bg); border: 1px solid #222; border-top: 2px solid #555; }
+        .card-header { border-bottom: 1px solid #222; color: #fff; font-family: monospace; font-size: 0.9rem; font-weight: bold; padding: 10px; background: var(--chrome-bg); }
+        
+        /* Footer Comms */
+        .breakroom { background: var(--dark-bg); border-top: 2px solid var(--neon-green); }
+        .breakroom-label { color: var(--neon-green); font-family: monospace; }
+        .chat-tag { color: #888; }
+        .breakroom-form button { background: var(--neon-green); color: #000; font-weight: bold; }
     </style>
 
-    <!-- GLOBAL APPLICATION LOGIC -->
+    <!-- SYSTEM LOGIC OPERATORS -->
     <script>
         let clockInterval = null;
 
         document.addEventListener("DOMContentLoaded", () => {
-            // Clock Init
             refreshHistoryUI();
             const storedStart = localStorage.getItem("punch_startTime");
             if (storedStart) {
                 runClockUI(parseInt(storedStart));
             }
 
-            // Bullet Feed Init
             refreshBulletFeed();
 
-            // Logs text loading
             document.getElementById("crewNoteInput").value = localStorage.getItem("canvas_crewNote") || "";
             document.getElementById("buildLogInput").value = localStorage.getItem("canvas_buildLog") || "";
+            
+            // Sync initial char counts
+            checkChars(document.getElementById("crewNoteInput"), 'noteCount');
+            checkChars(document.getElementById("buildLogInput"), 'logCount');
         });
 
-        /* Clock Handlers */
+        /* Accordion Space Manager Logic */
+        function toggleAccordion(button) {
+            const item = button.parentElement;
+            const container = item.parentElement;
+            const allItems = container.querySelectorAll('.accordion-item');
+            
+            allItems.forEach(i => {
+                if (i !== item) {
+                    i.classList.remove('active');
+                    i.querySelector('.arrow').innerText = '►';
+                }
+            });
+
+            item.classList.toggle('active');
+            const isNowActive = item.classList.contains('active');
+            item.querySelector('.arrow').innerText = isNowActive ? '▼' : '►';
+        }
+
+        /* Live Utility Tracker */
+        function checkChars(textarea, countId) {
+            document.getElementById(countId).innerText = textarea.value.length;
+        }
+
+        /* Clock Operators & Decimals Tracker */
         function clockIn() {
             const now = Date.now();
             localStorage.setItem("punch_startTime", now);
@@ -241,9 +381,11 @@
             if (!start) return;
 
             const elapsed = Date.now() - parseInt(start);
+            const hoursDecimal = (elapsed / (1000 * 60 * 60)).toFixed(2); // Step Ahead calculation
+            
             const log = {
                 date: new Date(parseInt(start)).toLocaleDateString(),
-                duration: formatClockTime(elapsed)
+                duration: `${formatClockTime(elapsed)} (${hoursDecimal} hrs)`
             };
 
             let items = JSON.parse(localStorage.getItem("punch_history")) || [];
@@ -255,8 +397,8 @@
             document.getElementById("clockInBtn").disabled = false;
             document.getElementById("clockOutBtn").disabled = true;
             document.getElementById("timerDisplay").innerText = "00:00:00";
-            document.getElementById("statusIndicator").innerText = "Status: Clocked Out";
-            document.getElementById("statusIndicator").style.color = "#888";
+            document.getElementById("statusIndicator").innerText = "Status: Standby";
+            document.getElementById("statusIndicator").style.color = "#666";
             refreshHistoryUI();
         }
 
@@ -264,8 +406,8 @@
             document.getElementById("clockInBtn").disabled = true;
             document.getElementById("clockOutBtn").disabled = false;
             const timeStr = new Date(startTime).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
-            document.getElementById("statusIndicator").innerText = `Clocked in at ${timeStr}`;
-            document.getElementById("statusIndicator").style.color = "#28a745";
+            document.getElementById("statusIndicator").innerText = `Active since ${timeStr}`;
+            document.getElementById("statusIndicator").style.color = "var(--neon-green)";
 
             clearInterval(clockInterval);
             clockInterval = setInterval(() => {
@@ -283,7 +425,7 @@
         function refreshHistoryUI() {
             const items = JSON.parse(localStorage.getItem("punch_history")) || [];
             const container = document.getElementById("shiftList");
-            container.innerHTML = items.length === 0 ? "<li style='color:#444;'>Empty log</li>" : "";
+            container.innerHTML = items.length === 0 ? "<li style='color:#444; justify-content:center;'>No entries</li>" : "";
             items.forEach(i => {
                 const li = document.createElement("li");
                 li.innerHTML = `<span>${i.date}</span><strong>${i.duration}</strong>`;
@@ -292,32 +434,32 @@
         }
 
         function clearHistory() {
-            if (confirm("Clear shift list?")) {
+            if (confirm("Purge system log history?")) {
                 localStorage.removeItem("punch_history");
                 refreshHistoryUI();
             }
         }
 
-        /* Bullet Feed Handlers */
+        /* Project Widget Feed Builder */
         function refreshBulletFeed() {
             const notes = JSON.parse(localStorage.getItem("canvas_project_notes")) || [];
             const container = document.getElementById("dashNotesBulletList");
             container.innerHTML = "";
 
             if (notes.length === 0) {
-                container.innerHTML = "<li style='color:#444; list-style:none; padding-left:0;'>No active updates logged.</li>";
+                container.innerHTML = "<li style='color:#444; list-style:none; padding-left:0;'>No transmissions logged.</li>";
                 return;
             }
 
             notes.slice(0, 3).forEach(note => {
                 const li = document.createElement("li");
-                const shortText = note.text.length > 60 ? note.text.substring(0, 60) + "..." : note.text;
+                const shortText = note.text.length > 50 ? note.text.substring(0, 50) + "..." : note.text;
                 li.innerHTML = `<span class="bullet-time">${note.time}</span>${shortText}`;
                 container.appendChild(li);
             });
         }
 
-        /* Notes & Logs Handlers */
+        /* Logs Handlers */
         function saveCrewNote() {
             const text = document.getElementById("crewNoteInput").value;
             localStorage.setItem("canvas_crewNote", text);
@@ -332,13 +474,13 @@
 
         function showStatus(elementId) {
             const statusEl = document.getElementById(elementId);
-            statusEl.innerText = "SAVED TO DEVICE";
-            statusEl.style.color = "#28a745";
+            statusEl.innerText = "✓ SYNCED";
+            statusEl.style.color = "var(--neon-green)";
             statusEl.style.opacity = "1";
             setTimeout(() => { statusEl.style.opacity = "0"; }, 2000);
         }
 
-        /* Authentication System */
+        /* Authentication System Link */
         function logout() {
             localStorage.removeItem('activeCrewMember');
             window.location.href = 'login.html';
