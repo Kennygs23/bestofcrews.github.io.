@@ -24,677 +24,78 @@
             <div class="toolbox-header">
                 <h3>🛠️ TOOL BOX</h3>
             </div>
+            
             <div class="toolbox-section">
                 <h4>Add to Canvas</h4>
                 <button class="tool-btn" onclick="addModule('photo')">+ Photo Card</button>
                 <button class="tool-btn" onclick="addModule('notes')">+ Crew Note</button>
                 <button class="tool-btn" onclick="addModule('build')">+ Build Log</button>
+            </div>
+
             <!-- START OF PUNCH CLOCK MODULE -->
-<div class="punch-clock-card">
-  <h3>Crew Punch Clock</h3>
-  <div class="timer-digits" id="timerDisplay">00:00:00</div>
-  <div class="status-msg" id="statusIndicator">Status: Clocked Out</div>
-  
-  <div class="clock-btn-row">
-    <button id="clockInBtn" class="p-btn p-btn-go" onclick="clockIn()">Clock In</button>
-    <button id="clockOutBtn" class="p-btn p-btn-stop" onclick="clockOut()" disabled>Clock Out</button>
-  </div>
+            <div class="punch-clock-card">
+                <h3>Crew Punch Clock</h3>
+                <div class="timer-digits" id="timerDisplay">00:00:00</div>
+                <div class="status-msg" id="statusIndicator">Status: Clocked Out</div>
+                
+                <div class="clock-btn-row">
+                    <button id="clockInBtn" class="p-btn p-btn-go" onclick="clockIn()">Clock In</button>
+                    <button id="clockOutBtn" class="p-btn p-btn-stop" onclick="clockOut()" disabled>Clock Out</button>
+                </div>
 
-  <div class="clock-history">
-    <h4>Shift History</h4>
-    <ul id="shiftList"></ul>
-    <button class="p-btn-clear" onclick="clearHistory()">Clear History</button>
-  </div>
-</div>
-                <!-- START OF INTERACTIVE PROJECT NOTES MODULE -->
-<div class="interactive-notes-card">
-  <h3>Active Project Log</h3>
-  
-  <!-- Note Input Area -->
-  <div class="note-input-wrapper">
-    <label for="newNoteContent">NEW LOG ENTRY</label>
-    <textarea id="newNoteContent" placeholder="Type a project note, material status, or crew update..."></textarea>
-    
-    <!-- Hidden input to track if we are editing an existing note -->
-    <input type="hidden" id="editingNoteId" value="">
-    
-    <button id="submitNoteBtn" class="canvas-btn btn-add" onclick="handleSubmitNote()">Add Note</button>
-  </div>
+                <div class="clock-history">
+                    <h4>Shift History</h4>
+                    <ul id="shiftList"></ul>
+                    <button class="p-btn-clear" onclick="clearHistory()">Clear History</button>
+                </div>
+            </div>
+            <!-- END OF PUNCH CLOCK MODULE -->
 
-  <hr class="card-divider">
+            <!-- DASHBOARD QUICK GLANCE BULLET-POINT DISPLAY -->
+            <div class="dash-project-widget">
+                <div class="widget-header">
+                    <h3>Active Project Feed</h3>
+                    <a href="projects.html" class="widget-link">Manage →</a>
+                </div>
+                <ul id="dashNotesBulletList" class="dash-bullet-list">
+                    <!-- Automated bullet points load here from projects.html -->
+                </ul>
+            </div>
 
-  <!-- Active Log List -->
-  <div class="log-stream-section">
-    <h4>Timeline History</h4>
-    <div id="notesTimeline" class="timeline-container">
-      <!-- Dynamic interactive notes drop here -->
-    </div>
-  </div>
-</div>
+            <!-- START OF STATIC LOGS & NOTES MODULE -->
+            <div class="crew-logs-card">
+                <h3>Crew Workspace Logs</h3>
+                
+                <!-- Crew Note Section -->
+                <div class="log-group">
+                    <label for="crewNoteInput">CREW NOTE</label>
+                    <textarea id="crewNoteInput" placeholder="Enter crew assignments or safety reminders..."></textarea>
+                    <div class="log-actions">
+                        <span id="noteSavedStatus" class="status-indicator"></span>
+                        <button class="log-btn log-btn-save" onclick="saveCrewNote()">Save Note</button>
+                    </div>
+                </div>
 
-<style>
-  .interactive-notes-card {
-    background: #121212;
-    border: 2px solid #ff5500;
-    border-radius: 6px;
-    padding: 16px;
-    color: #ffffff;
-    font-family: monospace;
-    margin-top: 15px;
-    box-sizing: border-box;
-  }
-  .interactive-notes-card h3, .interactive-notes-card h4 {
-    margin: 0 0 12px 0;
-    text-transform: uppercase;
-    letter-spacing: 1px;
-  }
-  .interactive-notes-card h3 {
-    font-size: 1.1rem;
-    color: #fff;
-    border-bottom: 1px solid #222;
-    padding-bottom: 6px;
-  }
-  .interactive-notes-card h4 {
-    font-size: 0.85rem;
-    color: #aaa;
-  }
-  .note-input-wrapper {
-    display: flex;
-    flex-direction: column;
-    gap: 6px;
-  }
-  .note-input-wrapper label {
-    font-size: 0.8rem;
-    color: #ff5500;
-    font-weight: bold;
-  }
-  .note-input-wrapper textarea {
-    background: #1a1a1a;
-    border: 1px solid #333;
-    border-radius: 4px;
-    color: #fff;
-    padding: 10px;
-    font-family: sans-serif;
-    font-size: 0.9rem;
-    resize: vertical;
-    min-height: 70px;
-  }
-  .note-input-wrapper textarea:focus {
-    outline: none;
-    border-color: #ff5500;
-  }
-  .canvas-btn {
-    padding: 8px 16px;
-    font-weight: bold;
-    border: none;
-    border-radius: 4px;
-    cursor: pointer;
-    text-transform: uppercase;
-    font-size: 0.8rem;
-    align-self: flex-end;
-    transition: background 0.2s;
-  }
-  .btn-add { background: #ff5500; color: white; }
-  .btn-add:hover { background: #e04b00; }
-  .btn-update { background: #28a745; color: white; }
-  .btn-update:hover { background: #218838; }
-  
-  .card-divider {
-    border: 0;
-    border-top: 1px solid #222;
-    margin: 15px 0;
-  }
-  .timeline-container {
-    max-height: 250px;
-    overflow-y: auto;
-    display: flex;
-    flex-direction: column;
-    gap: 10px;
-    padding-right: 4px;
-  }
-  
-  /* Individual Note Styling */
-  .note-item {
-    background: #1a1a1a;
-    border-left: 3px solid #ff5500;
-    border-radius: 0 4px 4px 0;
-    padding: 10px;
-    display: flex;
-    flex-direction: column;
-    gap: 6px;
-  }
-  .note-meta {
-    display: flex;
-    justify-content: space-between;
-    font-size: 0.75rem;
-    color: #666;
-    border-bottom: 1px solid #262626;
-    padding-bottom: 4px;
-  }
-  .note-timestamp { color: #888; }
-  .note-body {
-    font-family: sans-serif;
-    font-size: 0.9rem;
-    color: #ddd;
-    white-space: pre-wrap;
-    word-break: break-word;
-  }
-  .note-controls {
-    display: flex;
-    justify-content: flex-end;
-    gap: 10px;
-    margin-top: 4px;
-  }
-  .ctrl-btn {
-    background: transparent;
-    border: none;
-    color: #666;
-    font-size: 0.75rem;
-    cursor: pointer;
-    font-family: monospace;
-    text-transform: uppercase;
-    padding: 2px 4px;
-  }
-  .ctrl-btn-edit:hover { color: #28a745; }
-  .ctrl-btn-del:hover { color: #dc3545; }
-</style>
+                <hr class="log-divider">
 
-<script>
-  // Initial draw loop when system fires up
-  document.addEventListener("DOMContentLoaded", () => {
-    renderNotesTimeline();
-  });
+                <!-- Build Log Section -->
+                <div class="log-group">
+                    <label for="buildLogInput">DAILY BUILD LOG</label>
+                    <textarea id="buildLogInput" placeholder="Track structural progress or fabrication updates..."></textarea>
+                    <div class="log-actions">
+                        <span id="logSavedStatus" class="status-indicator"></span>
+                        <button class="log-btn log-btn-save" onclick="saveBuildLog()">Save Log</button>
+                    </div>
+                </div>
+            </div>
+            <!-- END OF LOGS & NOTES MODULE -->
 
-  // Handles adding new logs or submitting updates to old ones
-  function handleSubmitNote() {
-    const textarea = document.getElementById("newNoteContent");
-    const editIdInput = document.getElementById("editingNoteId");
-    const noteText = textarea.value.trim();
-    
-    if (!noteText) return alert("Cannot submit an empty log entry.");
-
-    let savedNotes = JSON.parse(localStorage.getItem("canvas_project_notes")) || [];
-    const activeEditId = editIdInput.value;
-
-    if (activeEditId) {
-      // 5 Steps Ahead Logic: Find target item and modify text inline
-      savedNotes = savedNotes.map(note => {
-        if (note.id === parseInt(activeEditId)) {
-          note.text = noteText;
-          note.edited = true; // Mark as edited
-        }
-        return note;
-      });
-      
-      // Reset interface configurations
-      editIdInput.value = "";
-      document.getElementById("submitNoteBtn").innerText = "Add Note";
-      document.getElementById("submitNoteBtn").className = "canvas-btn btn-add";
-    } else {
-      // Build a fresh timestamped entity block
-      const now = new Date();
-      const timestampString = now.toLocaleDateString() + " @ " + now.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
-      
-      const freshNote = {
-        id: Date.now(), // Unique tracker
-        text: noteText,
-        time: timestampString,
-        edited: false
-      };
-      
-      savedNotes.unshift(freshNote); // Push structural priority to top
-    }
-
-    localStorage.setItem("canvas_project_notes", JSON.stringify(savedNotes));
-    textarea.value = "";
-    renderNotesTimeline();
-  }
-
-  // Visualizes current arrays into physical HTML timeline elements
-  function renderNotesTimeline() {
-    const notes = JSON.parse(localStorage.getItem("canvas_project_notes")) || [];
-    const container = document.getElementById("notesTimeline");
-    container.innerHTML = "";
-
-    if (notes.length === 0) {
-      container.innerHTML = "<div style='color:#444; font-size:0.85rem; text-align:center; padding:20px;'>No active timeline history entries.</div>";
-      return;
-    }
-
-    notes.forEach(note => {
-      const noteElement = document.createElement("div");
-      noteElement.className = "note-item";
-      
-      noteElement.innerHTML = `
-        <div class="note-meta">
-          <span class="note-timestamp">${note.time} ${note.edited ? '(EDITED)' : ''}</span>
-        </div>
-        <div class="note-body">${escapeHTML(note.text)}</div>
-        <div class="note-controls">
-          <button class="ctrl-btn ctrl-btn-edit" onclick="triggerEditNote(${note.id})">Edit</button>
-          <button class="ctrl-btn ctrl-btn-del" onclick="triggerDeleteNote(${note.id})">Delete</button>
-        </div>
-      `;
-      container.appendChild(noteElement);
-    });
-  }
-
-  // Pre-populates main prompt form with data payload to perform clean revisions
-  function triggerEditNote(noteId) {
-    const notes = JSON.parse(localStorage.getItem("canvas_project_notes")) || [];
-    const targetNote = notes.find(n => n.id === noteId);
-    
-    if (!targetNote) return;
-
-    // Direct values into editing dashboard panels
-    document.getElementById("newNoteContent").value = targetNote.text;
-    document.getElementById("editingNoteId").value = targetNote.id;
-    
-    // Shift layout buttons into update configurations
-    const submitBtn = document.getElementById("submitNoteBtn");
-    submitBtn.innerText = "Update Entry";
-    submitBtn.className = "canvas-btn btn-update";
-    
-    document.getElementById("newNoteContent").focus();
-  }
-
-  // Targets structural logs for deletion execution
-  function triggerDeleteNote(noteId) {
-    if (!confirm("Permanently erase this timeline log entry?")) return;
-
-    let notes = JSON.parse(localStorage.getItem("canvas_project_notes")) || [];
-    notes = notes.filter(n => n.id !== noteId);
-    
-    localStorage.setItem("canvas_project_notes", JSON.stringify(notes));
-    
-    // Reset inputs if you delete an item you are actively modifying
-    if (document.getElementById("editingNoteId").value == noteId) {
-      document.getElementById("editingNoteId").value = "";
-      document.getElementById("newNoteContent").value = "";
-      document.getElementById("submitNoteBtn").innerText = "Add Note";
-      document.getElementById("submitNoteBtn").className = "canvas-btn btn-add";
-    }
-
-    renderNotesTimeline();
-  }
-
-  // Prevents layout injections or text rendering issues
-  function escapeHTML(str) {
-    return str.replace(/[&<>'"]/g, 
-      tag => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', "'": '&#39;', '"': '&quot;' }[tag] || tag)
-    );
-  }
-</script>
-<!-- END OF INTERACTIVE PROJECT NOTES MODULE -->
-                <!-- START OF LOGS & NOTES MODULE -->
-<div class="crew-logs-card">
-  <h3>Crew Workspace Logs</h3>
-  
-  <!-- Crew Note Section -->
-  <div class="log-group">
-    <label for="crewNoteInput">CREW NOTE</label>
-    <textarea id="crewNoteInput" placeholder="Enter crew assignments, site access notes, or safety reminders..."></textarea>
-    <div class="log-actions">
-      <span id="noteSavedStatus" class="status-indicator"></span>
-      <button class="log-btn log-btn-save" onclick="saveCrewNote()">Save Note</button>
-    </div>
-  </div>
-
-  <hr class="log-divider">
-
-  <!-- Build Log Section -->
-  <div class="log-group">
-    <label for="buildLogInput">DAILY BUILD LOG</label>
-    <textarea id="buildLogInput" placeholder="Track structural progress, fabrication updates, or materials used today..."></textarea>
-    <div class="log-actions">
-      <span id="logSavedStatus" class="status-indicator"></span>
-      <button class="log-btn log-btn-save" onclick="saveBuildLog()">Save Log</button>
-    </div>
-  </div>
-</div>
-<!-- DASHBOARD QUICK GLANCE WIDGET -->
-<div class="dash-project-widget">
-  <div class="widget-header">
-    <h3>Active Project Feed</h3>
-    <a href="projects.html" class="widget-link">Manage Projects →</a>
-  </div>
-  <ul id="dashNotesBulletList" class="dash-bullet-list">
-    <!-- Automated bullet points load here -->
-  </ul>
-</div>
-
-<style>
-  .dash-project-widget {
-    background: #121212;
-    border: 2px solid #ff5500;
-    border-radius: 6px;
-    padding: 16px;
-    color: #ffffff;
-    font-family: monospace;
-    margin-top: 15px;
-  }
-  .widget-header {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    border-bottom: 1px solid #222;
-    padding-bottom: 8px;
-    margin-bottom: 12px;
-  }
-  .widget-header h3 { margin: 0; font-size: 1.1rem; text-transform: uppercase; }
-  .widget-link {
-    color: #ff5500;
-    text-decoration: none;
-    font-size: 0.8rem;
-    font-weight: bold;
-    text-transform: uppercase;
-  }
-  .widget-link:hover { text-decoration: underline; }
-  .dash-bullet-list {
-    list-style: none;
-    padding: 0;
-    margin: 0;
-  }
-  .dash-bullet-list li {
-    position: relative;
-    padding-left: 15px;
-    margin-bottom: 8px;
-    font-size: 0.9rem;
-    color: #ddd;
-    font-family: sans-serif;
-    line-height: 1.4;
-  }
-  .dash-bullet-list li::before {
-    content: "▪";
-    position: absolute;
-    left: 0;
-    color: #ff5500;
-  }
-  .dash-bullet-list .bullet-time {
-    font-family: monospace;
-    font-size: 0.75rem;
-    color: #666;
-    display: block;
-  }
-</style>
-
-<script>
-  document.addEventListener("DOMContentLoaded", () => {
-    const notes = JSON.parse(localStorage.getItem("canvas_project_notes")) || [];
-    const container = document.getElementById("dashNotesBulletList");
-    container.innerHTML = "";
-
-    if (notes.length === 0) {
-      container.innerHTML = "<li style='color:#444; list-style:none; padding-left:0;'>No active updates logged.</li>";
-      return;
-    }
-
-    // Grab only the top 3 most recent notes for the dashboard view
-    notes.slice(0, 3).forEach(note => {
-      const li = document.createElement("li");
-      // Truncate long notes so they stay as single line glances
-      const shortText = note.text.length > 60 ? note.text.substring(0, 60) + "..." : note.text;
-      li.innerHTML = `
-        <span class="bullet-time">${note.time}</span>
-        ${shortText}
-      `;
-      container.appendChild(li);
-    });
-  });
-</script>
-<style>
-  .crew-logs-card {
-    background: #121212;
-    border: 2px solid #ff5500;
-    border-radius: 6px;
-    padding: 16px;
-    color: #ffffff;
-    font-family: monospace;
-    margin-top: 15px;
-    box-sizing: border-box;
-  }
-  .crew-logs-card h3 {
-    margin: 0 0 15px 0;
-    text-transform: uppercase;
-    font-size: 1.1rem;
-    color: #fff;
-    border-bottom: 1px solid #222;
-    padding-bottom: 5px;
-  }
-  .log-group {
-    display: flex;
-    flex-direction: column;
-    gap: 6px;
-  }
-  .log-group label {
-    font-size: 0.85rem;
-    color: #ff5500;
-    font-weight: bold;
-    letter-spacing: 1px;
-  }
-  .log-group textarea {
-    background: #1a1a1a;
-    border: 1px solid #333;
-    border-radius: 4px;
-    color: #fff;
-    padding: 10px;
-    font-family: sans-serif;
-    font-size: 0.9rem;
-    resize: vertical;
-    min-height: 80px;
-  }
-  .log-group textarea:focus {
-    outline: none;
-    border-color: #ff5500;
-  }
-  .log-actions {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    margin-top: 4px;
-  }
-  .status-indicator {
-    font-size: 0.75rem;
-    transition: opacity 0.3s ease;
-  }
-  .log-btn {
-    padding: 6px 16px;
-    font-weight: bold;
-    border: none;
-    border-radius: 4px;
-    cursor: pointer;
-    text-transform: uppercase;
-    font-size: 0.8rem;
-  }
-  .log-btn-save {
-    background: #28a745;
-    color: white;
-  }
-  .log-btn-save:hover {
-    background: #218838;
-  }
-  .log-divider {
-    border: 0;
-    border-top: 1px solid #222;
-    margin: 15px 0;
-  }
-</style>
-
-<script>
-  // Automatically load existing text when the workspace dashboard loads
-  document.addEventListener("DOMContentLoaded", () => {
-    document.getElementById("crewNoteInput").value = localStorage.getItem("canvas_crewNote") || "";
-    document.getElementById("buildLogInput").value = localStorage.getItem("canvas_buildLog") || "";
-  });
-
-  // Save functionality for the Crew Note tool
-  function saveCrewNote() {
-    const text = document.getElementById("crewNoteInput").value;
-    localStorage.setItem("canvas_crewNote", text);
-    showStatus("noteSavedStatus");
-  }
-
-  // Save functionality for the Build Log tool
-  function saveBuildLog() {
-    const text = document.getElementById("buildLogInput").value;
-    localStorage.setItem("canvas_buildLog", text);
-    showStatus("logSavedStatus");
-  }
-
-  // Visual confirmation feedback trigger
-  function showStatus(elementId) {
-    const statusEl = document.getElementById(elementId);
-    statusEl.innerText = "SAVED TO DEVICE";
-    statusEl.style.color = "#28a745";
-    statusEl.style.opacity = "1";
-    
-    setTimeout(() => {
-      statusEl.style.opacity = "0";
-    }, 2000);
-  }
-</script>
-<!-- END OF LOGS & NOTES MODULE -->
-
-<style>
-  .punch-clock-card {
-    background: #121212;
-    border: 2px solid #ff5500;
-    border-radius: 6px;
-    padding: 16px;
-    color: #ffffff;
-    font-family: monospace;
-    margin-top: 15px;
-    box-sizing: border-box;
-  }
-  .punch-clock-card h3 {
-    margin: 0 0 10px 0;
-    text-transform: uppercase;
-    font-size: 1.1rem;
-    color: #fff;
-  }
-  .timer-digits {
-    font-size: 2.5rem;
-    font-weight: bold;
-    text-align: center;
-    color: #ff5500;
-    margin: 10px 0;
-  }
-  .status-msg {
-    text-align: center;
-    font-size: 0.8rem;
-    color: #888;
-    margin-bottom: 15px;
-    text-transform: uppercase;
-  }
-  .clock-btn-row {
-    display: flex;
-    gap: 8px;
-    margin-bottom: 15px;
-  }
-  .p-btn {
-    flex: 1;
-    padding: 10px;
-    font-weight: bold;
-    border: none;
-    border-radius: 4px;
-    cursor: pointer;
-    text-transform: uppercase;
-  }
-  .p-btn-go { background: #28a745; color: white; }
-  .p-btn-stop { background: #dc3545; color: white; }
-  .p-btn:disabled { background: #333; color: #666; cursor: not-allowed; }
-  .clock-history h4 { margin: 10px 0 5px 0; font-size: 0.9rem; color: #aaa; text-transform: uppercase; }
-  #shiftList { list-style: none; padding: 0; margin: 0 0 10px 0; max-height: 100px; overflow-y: auto; background: #1a1a1a; border-radius: 4px; }
-  #shiftList li { padding: 6px 10px; border-bottom: 1px solid #222; font-size: 0.8rem; display: flex; justify-content: space-between; }
-  .p-btn-clear { background: transparent; border: 1px solid #444; color: #777; font-size: 0.7rem; padding: 4px 8px; cursor: pointer; border-radius: 3px; }
-  .p-btn-clear:hover { color: #ff5500; border-color: #ff5500; }
-</style>
-
-<script>
-  let clockInterval = null;
-
-  document.addEventListener("DOMContentLoaded", () => {
-    refreshHistoryUI();
-    const storedStart = localStorage.getItem("punch_startTime");
-    if (storedStart) {
-      runClockUI(parseInt(storedStart));
-    }
-  });
-
-  function clockIn() {
-    const now = Date.now();
-    localStorage.setItem("punch_startTime", now);
-    runClockUI(now);
-  }
-
-  function clockOut() {
-    const start = localStorage.getItem("punch_startTime");
-    if (!start) return;
-
-    const elapsed = Date.now() - parseInt(start);
-    const log = {
-      date: new Date(parseInt(start)).toLocaleDateString(),
-      duration: formatClockTime(elapsed)
-    };
-
-    let items = JSON.parse(localStorage.getItem("punch_history")) || [];
-    items.unshift(log);
-    localStorage.setItem("punch_history", JSON.stringify(items));
-    localStorage.removeItem("punch_startTime");
-    
-    clearInterval(clockInterval);
-    document.getElementById("clockInBtn").disabled = false;
-    document.getElementById("clockOutBtn").disabled = true;
-    document.getElementById("timerDisplay").innerText = "00:00:00";
-    document.getElementById("statusIndicator").innerText = "Status: Clocked Out";
-    document.getElementById("statusIndicator").style.color = "#888";
-    refreshHistoryUI();
-  }
-
-  function runClockUI(startTime) {
-    document.getElementById("clockInBtn").disabled = true;
-    document.getElementById("clockOutBtn").disabled = false;
-    const timeStr = new Date(startTime).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
-    document.getElementById("statusIndicator").innerText = `Clocked in at ${timeStr}`;
-    document.getElementById("statusIndicator").style.color = "#28a745";
-
-    clearInterval(clockInterval);
-    clockInterval = setInterval(() => {
-      document.getElementById("timerDisplay").innerText = formatClockTime(Date.now() - startTime);
-    }, 1000);
-  }
-
-  function formatClockTime(ms) {
-    let secs = Math.floor(ms / 1000);
-    let mins = Math.floor(secs / 60);
-    let hrs = Math.floor(mins / 60);
-    return `${hrs.toString().padStart(2,'0')}:${(mins%60).toString().padStart(2,'0')}:${(secs%60).toString().padStart(2,'0')}`;
-  }
-
-  function refreshHistoryUI() {
-    const items = JSON.parse(localStorage.getItem("punch_history")) || [];
-    const container = document.getElementById("shiftList");
-    container.innerHTML = items.length === 0 ? "<li style='color:#444;'>Empty log</li>" : "";
-    items.forEach(i => {
-      const li = document.createElement("li");
-      li.innerHTML = `<span>${i.date}</span><strong>${i.duration}</strong>`;
-      container.appendChild(li);
-    });
-  }
-
-  function clearHistory() {
-    if (confirm("Clear shift list?")) {
-      localStorage.removeItem("punch_history");
-      refreshHistoryUI();
-    }
-  }
-</script>
-<!-- END OF PUNCH CLOCK MODULE -->
             <div class="toolbox-section">
                 <h4>Quick Utilities</h4>
                 <button class="tool-btn utility">Calc / Scale</button>
                 <button class="tool-btn utility">Material Checklist</button>
             </div>
+            
             <!-- Dynamic Sign Out Button -->
             <div class="toolbox-section" style="margin-top: auto; padding-top: 20px;">
                 <button class="tool-btn" onclick="logout()" style="border-color: #ff4d4d; color: #ff4d4d; background: rgba(255,77,77,0.05);">🔓 Sign Out</button>
@@ -737,6 +138,212 @@
         </footer>
 
     </div>
+
+    <!-- GLOBAL MODULE STYLES -->
+    <style>
+        /* Punch Clock System */
+        .punch-clock-card {
+            background: #121212;
+            border: 2px solid #ff5500;
+            border-radius: 6px;
+            padding: 16px;
+            color: #ffffff;
+            font-family: monospace;
+            margin-top: 15px;
+            box-sizing: border-box;
+        }
+        .punch-clock-card h3 { margin: 0 0 10px 0; text-transform: uppercase; font-size: 1.1rem; color: #fff; }
+        .timer-digits { font-size: 2.5rem; font-weight: bold; text-align: center; color: #ff5500; margin: 10px 0; }
+        .status-msg { text-align: center; font-size: 0.8rem; color: #888; margin-bottom: 15px; text-transform: uppercase; }
+        .clock-btn-row { display: flex; gap: 8px; margin-bottom: 15px; }
+        .p-btn { flex: 1; padding: 10px; font-weight: bold; border: none; border-radius: 4px; cursor: pointer; text-transform: uppercase; }
+        .p-btn-go { background: #28a745; color: white; }
+        .p-btn-stop { background: #dc3545; color: white; }
+        .p-btn:disabled { background: #333; color: #666; cursor: not-allowed; }
+        .clock-history h4 { margin: 10px 0 5px 0; font-size: 0.9rem; color: #aaa; text-transform: uppercase; }
+        #shiftList { list-style: none; padding: 0; margin: 0 0 10px 0; max-height: 100px; overflow-y: auto; background: #1a1a1a; border-radius: 4px; }
+        #shiftList li { padding: 6px 10px; border-bottom: 1px solid #222; font-size: 0.8rem; display: flex; justify-content: space-between; }
+        .p-btn-clear { background: transparent; border: 1px solid #444; color: #777; font-size: 0.7rem; padding: 4px 8px; cursor: pointer; border-radius: 3px; }
+        .p-btn-clear:hover { color: #ff5500; border-color: #ff5500; }
+
+        /* Project Widget System */
+        .dash-project-widget {
+            background: #121212;
+            border: 2px solid #ff5500;
+            border-radius: 6px;
+            padding: 16px;
+            color: #ffffff;
+            font-family: monospace;
+            margin-top: 15px;
+        }
+        .widget-header { display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid #222; padding-bottom: 8px; margin-bottom: 12px; }
+        .widget-header h3 { margin: 0; font-size: 1.1rem; text-transform: uppercase; }
+        .widget-link { color: #ff5500; text-decoration: none; font-size: 0.8rem; font-weight: bold; text-transform: uppercase; }
+        .widget-link:hover { text-decoration: underline; }
+        .dash-bullet-list { list-style: none; padding: 0; margin: 0; }
+        .dash-bullet-list li { position: relative; padding-left: 15px; margin-bottom: 8px; font-size: 0.9rem; color: #ddd; font-family: sans-serif; line-height: 1.4; }
+        .dash-bullet-list li::before { content: "▪"; position: absolute; left: 0; color: #ff5500; }
+        .dash-bullet-list .bullet-time { font-family: monospace; font-size: 0.75rem; color: #666; display: block; }
+
+        /* Workspace Logs System */
+        .crew-logs-card {
+            background: #121212;
+            border: 2px solid #ff5500;
+            border-radius: 6px;
+            padding: 16px;
+            color: #ffffff;
+            font-family: monospace;
+            margin-top: 15px;
+            box-sizing: border-box;
+        }
+        .crew-logs-card h3 { margin: 0 0 15px 0; text-transform: uppercase; font-size: 1.1rem; color: #fff; border-bottom: 1px solid #222; padding-bottom: 5px; }
+        .log-group { display: flex; flex-direction: column; gap: 6px; }
+        .log-group label { font-size: 0.85rem; color: #ff5500; font-weight: bold; letter-spacing: 1px; }
+        .log-group textarea { background: #1a1a1a; border: 1px solid #333; border-radius: 4px; color: #fff; padding: 10px; font-family: sans-serif; font-size: 0.9rem; resize: vertical; min-height: 80px; }
+        .log-group textarea:focus { outline: none; border-color: #ff5500; }
+        .log-actions { display: flex; justify-content: space-between; align-items: center; margin-top: 4px; }
+        .status-indicator { font-size: 0.75rem; transition: opacity 0.3s ease; }
+        .log-btn { padding: 6px 16px; font-weight: bold; border: none; border-radius: 4px; cursor: pointer; text-transform: uppercase; font-size: 0.8rem; }
+        .log-btn-save { background: #28a745; color: white; }
+        .log-btn-save:hover { background: #218838; }
+        .log-divider { border: 0; border-top: 1px solid #222; margin: 15px 0; }
+    </style>
+
+    <!-- GLOBAL APPLICATION LOGIC -->
+    <script>
+        let clockInterval = null;
+
+        document.addEventListener("DOMContentLoaded", () => {
+            // Clock Init
+            refreshHistoryUI();
+            const storedStart = localStorage.getItem("punch_startTime");
+            if (storedStart) {
+                runClockUI(parseInt(storedStart));
+            }
+
+            // Bullet Feed Init
+            refreshBulletFeed();
+
+            // Logs text loading
+            document.getElementById("crewNoteInput").value = localStorage.getItem("canvas_crewNote") || "";
+            document.getElementById("buildLogInput").value = localStorage.getItem("canvas_buildLog") || "";
+        });
+
+        /* Clock Handlers */
+        function clockIn() {
+            const now = Date.now();
+            localStorage.setItem("punch_startTime", now);
+            runClockUI(now);
+        }
+
+        function clockOut() {
+            const start = localStorage.getItem("punch_startTime");
+            if (!start) return;
+
+            const elapsed = Date.now() - parseInt(start);
+            const log = {
+                date: new Date(parseInt(start)).toLocaleDateString(),
+                duration: formatClockTime(elapsed)
+            };
+
+            let items = JSON.parse(localStorage.getItem("punch_history")) || [];
+            items.unshift(log);
+            localStorage.setItem("punch_history", JSON.stringify(items));
+            localStorage.removeItem("punch_startTime");
+            
+            clearInterval(clockInterval);
+            document.getElementById("clockInBtn").disabled = false;
+            document.getElementById("clockOutBtn").disabled = true;
+            document.getElementById("timerDisplay").innerText = "00:00:00";
+            document.getElementById("statusIndicator").innerText = "Status: Clocked Out";
+            document.getElementById("statusIndicator").style.color = "#888";
+            refreshHistoryUI();
+        }
+
+        function runClockUI(startTime) {
+            document.getElementById("clockInBtn").disabled = true;
+            document.getElementById("clockOutBtn").disabled = false;
+            const timeStr = new Date(startTime).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+            document.getElementById("statusIndicator").innerText = `Clocked in at ${timeStr}`;
+            document.getElementById("statusIndicator").style.color = "#28a745";
+
+            clearInterval(clockInterval);
+            clockInterval = setInterval(() => {
+                document.getElementById("timerDisplay").innerText = formatClockTime(Date.now() - startTime);
+            }, 1000);
+        }
+
+        function formatClockTime(ms) {
+            let secs = Math.floor(ms / 1000);
+            let mins = Math.floor(secs / 60);
+            let hrs = Math.floor(mins / 60);
+            return `${hrs.toString().padStart(2,'0')}:${(mins%60).toString().padStart(2,'0')}:${(secs%60).toString().padStart(2,'0')}`;
+        }
+
+        function refreshHistoryUI() {
+            const items = JSON.parse(localStorage.getItem("punch_history")) || [];
+            const container = document.getElementById("shiftList");
+            container.innerHTML = items.length === 0 ? "<li style='color:#444;'>Empty log</li>" : "";
+            items.forEach(i => {
+                const li = document.createElement("li");
+                li.innerHTML = `<span>${i.date}</span><strong>${i.duration}</strong>`;
+                container.appendChild(li);
+            });
+        }
+
+        function clearHistory() {
+            if (confirm("Clear shift list?")) {
+                localStorage.removeItem("punch_history");
+                refreshHistoryUI();
+            }
+        }
+
+        /* Bullet Feed Handlers */
+        function refreshBulletFeed() {
+            const notes = JSON.parse(localStorage.getItem("canvas_project_notes")) || [];
+            const container = document.getElementById("dashNotesBulletList");
+            container.innerHTML = "";
+
+            if (notes.length === 0) {
+                container.innerHTML = "<li style='color:#444; list-style:none; padding-left:0;'>No active updates logged.</li>";
+                return;
+            }
+
+            notes.slice(0, 3).forEach(note => {
+                const li = document.createElement("li");
+                const shortText = note.text.length > 60 ? note.text.substring(0, 60) + "..." : note.text;
+                li.innerHTML = `<span class="bullet-time">${note.time}</span>${shortText}`;
+                container.appendChild(li);
+            });
+        }
+
+        /* Notes & Logs Handlers */
+        function saveCrewNote() {
+            const text = document.getElementById("crewNoteInput").value;
+            localStorage.setItem("canvas_crewNote", text);
+            showStatus("noteSavedStatus");
+        }
+
+        function saveBuildLog() {
+            const text = document.getElementById("buildLogInput").value;
+            localStorage.setItem("canvas_buildLog", text);
+            showStatus("logSavedStatus");
+        }
+
+        function showStatus(elementId) {
+            const statusEl = document.getElementById(elementId);
+            statusEl.innerText = "SAVED TO DEVICE";
+            statusEl.style.color = "#28a745";
+            statusEl.style.opacity = "1";
+            setTimeout(() => { statusEl.style.opacity = "0"; }, 2000);
+        }
+
+        /* Authentication System */
+        function logout() {
+            localStorage.removeItem('activeCrewMember');
+            window.location.href = 'login.html';
+        }
+    </script>
 
     <script src="app.js"></script>
 </body>
