@@ -81,14 +81,15 @@
                     </button>
                     <div class="accordion-content">
                         <div class="crew-logs-card">
-                    <div class="log-group">
+                <div class="log-group">
     <label for="crewNoteInput">CREW NOTE</label>
     <textarea id="crewNoteInput" maxlength="250" oninput="checkChars(this, 'noteCount')" placeholder="Active assignments..."></textarea>
     <div class="log-actions">
         <span class="char-counter"><span id="noteCount">0</span>/250</span>
         <span id="noteSavedStatus" class="status-indicator"></span>
-        <button class="log-btn log-btn-save" onclick="saveCrewNote()">Save</button>
+        <button class="log-btn log-btn-save" id="saveNoteBtn">Save</button>
     </div>
+</div>
 </div>
 
                             <hr class="log-divider">
