@@ -29,7 +29,159 @@
                 <button class="tool-btn" onclick="addModule('photo')">+ Photo Card</button>
                 <button class="tool-btn" onclick="addModule('notes')">+ Crew Note</button>
                 <button class="tool-btn" onclick="addModule('build')">+ Build Log</button>
-            </div>
+            <!-- START OF PUNCH CLOCK MODULE -->
+<div class="punch-clock-card">
+  <h3>Crew Punch Clock</h3>
+  <div class="timer-digits" id="timerDisplay">00:00:00</div>
+  <div class="status-msg" id="statusIndicator">Status: Clocked Out</div>
+  
+  <div class="clock-btn-row">
+    <button id="clockInBtn" class="p-btn p-btn-go" onclick="clockIn()">Clock In</button>
+    <button id="clockOutBtn" class="p-btn p-btn-stop" onclick="clockOut()" disabled>Clock Out</button>
+  </div>
+
+  <div class="clock-history">
+    <h4>Shift History</h4>
+    <ul id="shiftList"></ul>
+    <button class="p-btn-clear" onclick="clearHistory()">Clear History</button>
+  </div>
+</div>
+
+<style>
+  .punch-clock-card {
+    background: #121212;
+    border: 2px solid #ff5500;
+    border-radius: 6px;
+    padding: 16px;
+    color: #ffffff;
+    font-family: monospace;
+    margin-top: 15px;
+    box-sizing: border-box;
+  }
+  .punch-clock-card h3 {
+    margin: 0 0 10px 0;
+    text-transform: uppercase;
+    font-size: 1.1rem;
+    color: #fff;
+  }
+  .timer-digits {
+    font-size: 2.5rem;
+    font-weight: bold;
+    text-align: center;
+    color: #ff5500;
+    margin: 10px 0;
+  }
+  .status-msg {
+    text-align: center;
+    font-size: 0.8rem;
+    color: #888;
+    margin-bottom: 15px;
+    text-transform: uppercase;
+  }
+  .clock-btn-row {
+    display: flex;
+    gap: 8px;
+    margin-bottom: 15px;
+  }
+  .p-btn {
+    flex: 1;
+    padding: 10px;
+    font-weight: bold;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    text-transform: uppercase;
+  }
+  .p-btn-go { background: #28a745; color: white; }
+  .p-btn-stop { background: #dc3545; color: white; }
+  .p-btn:disabled { background: #333; color: #666; cursor: not-allowed; }
+  .clock-history h4 { margin: 10px 0 5px 0; font-size: 0.9rem; color: #aaa; text-transform: uppercase; }
+  #shiftList { list-style: none; padding: 0; margin: 0 0 10px 0; max-height: 100px; overflow-y: auto; background: #1a1a1a; border-radius: 4px; }
+  #shiftList li { padding: 6px 10px; border-bottom: 1px solid #222; font-size: 0.8rem; display: flex; justify-content: space-between; }
+  .p-btn-clear { background: transparent; border: 1px solid #444; color: #777; font-size: 0.7rem; padding: 4px 8px; cursor: pointer; border-radius: 3px; }
+  .p-btn-clear:hover { color: #ff5500; border-color: #ff5500; }
+</style>
+
+<script>
+  let clockInterval = null;
+
+  document.addEventListener("DOMContentLoaded", () => {
+    refreshHistoryUI();
+    const storedStart = localStorage.getItem("punch_startTime");
+    if (storedStart) {
+      runClockUI(parseInt(storedStart));
+    }
+  });
+
+  function clockIn() {
+    const now = Date.now();
+    localStorage.setItem("punch_startTime", now);
+    runClockUI(now);
+  }
+
+  function clockOut() {
+    const start = localStorage.getItem("punch_startTime");
+    if (!start) return;
+
+    const elapsed = Date.now() - parseInt(start);
+    const log = {
+      date: new Date(parseInt(start)).toLocaleDateString(),
+      duration: formatClockTime(elapsed)
+    };
+
+    let items = JSON.parse(localStorage.getItem("punch_history")) || [];
+    items.unshift(log);
+    localStorage.setItem("punch_history", JSON.stringify(items));
+    localStorage.removeItem("punch_startTime");
+    
+    clearInterval(clockInterval);
+    document.getElementById("clockInBtn").disabled = false;
+    document.getElementById("clockOutBtn").disabled = true;
+    document.getElementById("timerDisplay").innerText = "00:00:00";
+    document.getElementById("statusIndicator").innerText = "Status: Clocked Out";
+    document.getElementById("statusIndicator").style.color = "#888";
+    refreshHistoryUI();
+  }
+
+  function runClockUI(startTime) {
+    document.getElementById("clockInBtn").disabled = true;
+    document.getElementById("clockOutBtn").disabled = false;
+    const timeStr = new Date(startTime).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+    document.getElementById("statusIndicator").innerText = `Clocked in at ${timeStr}`;
+    document.getElementById("statusIndicator").style.color = "#28a745";
+
+    clearInterval(clockInterval);
+    clockInterval = setInterval(() => {
+      document.getElementById("timerDisplay").innerText = formatClockTime(Date.now() - startTime);
+    }, 1000);
+  }
+
+  function formatClockTime(ms) {
+    let secs = Math.floor(ms / 1000);
+    let mins = Math.floor(secs / 60);
+    let hrs = Math.floor(mins / 60);
+    return `${hrs.toString().padStart(2,'0')}:${(mins%60).toString().padStart(2,'0')}:${(secs%60).toString().padStart(2,'0')}`;
+  }
+
+  function refreshHistoryUI() {
+    const items = JSON.parse(localStorage.getItem("punch_history")) || [];
+    const container = document.getElementById("shiftList");
+    container.innerHTML = items.length === 0 ? "<li style='color:#444;'>Empty log</li>" : "";
+    items.forEach(i => {
+      const li = document.createElement("li");
+      li.innerHTML = `<span>${i.date}</span><strong>${i.duration}</strong>`;
+      container.appendChild(li);
+    });
+  }
+
+  function clearHistory() {
+    if (confirm("Clear shift list?")) {
+      localStorage.removeItem("punch_history");
+      refreshHistoryUI();
+    }
+  }
+</script>
+<!-- END OF PUNCH CLOCK MODULE -->
             <div class="toolbox-section">
                 <h4>Quick Utilities</h4>
                 <button class="tool-btn utility">Calc / Scale</button>
