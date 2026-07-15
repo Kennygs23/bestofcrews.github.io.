@@ -66,10 +66,11 @@ function addModule(type) {
     }
 
     card.innerHTML = `
-    <div class="card-header">
-        ${title}
+    <div class="card-header" style="display: flex; justify-content: space-between; align-items: center;">
+        <span>${title}</span>
         <span 
         class="delete-btn"
+        style="cursor: pointer; color: #ff4d4d; font-weight: bold; font-size: 1.1rem;"
         onclick="this.closest('.canvas-card').remove()">
         ×
         </span>
@@ -96,16 +97,18 @@ if(chatForm){
 
         const sender = currentUser || "Guest";
 
-        chatStream.innerHTML += `
-        <span class="chat-tag">
-        [${sender}]:
-        </span>
-        ${message}
-        <span class="divider">
-        |
-        </span>
+        // Structured HTML insertion ensures safe rendering and keeps input focus from breaking
+        const dynamicChatHTML = `
+        <span class="chat-tag">[${sender}]:</span> ${message}
+        <span class="divider">|</span>
         `;
+        
+        chatStream.insertAdjacentHTML('beforeend', dynamicChatHTML);
 
         chatInput.value = "";
+        
+        // Dynamic horizontal scroll panel track control
+        const container = chatStream.parentElement;
+        container.scrollLeft = container.scrollWidth;
     });
 }
