@@ -1,13 +1,21 @@
-// --- CREW NOTES ---
-const crewNotes = [
-    "Check the level twice. The concrete slab on this venue is totally sloped.",
-    "Do NOT touch the miter saw in Bay 2, blade is dull as a butter knife.",
-    "Client changed their mind again. Double-check the framing layout before cutting.",
-    "Whoever borrowed the 5.0Ah DeWalt battery, bring it back to the main box.",
-    "Lunch run at 12:00. Text Ken your order."
-];
+// --- FIREBASE SETUP ---
+import { 
+    getFirestore, 
+    collection, 
+    addDoc, 
+    deleteDoc, 
+    doc, 
+    onSnapshot, 
+    serverTimestamp, 
+    query, 
+    orderBy 
+} from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js"; 
 
-// --- BUILD LOGS ---
+// Initialize Firestore (Assumes your main Firebase app is initialized elsewhere)
+const db = getFirestore(); 
+const notesColRef = collection(db, "crewNotes");
+
+// --- BUILD LOGS (Static for now) ---
 const buildLogs = [
     "Structural frame completed. Moving on to skinning and paint.",
     "LED channel routing is finished. Ready for electrical integration.",
@@ -19,14 +27,16 @@ const buildLogs = [
 const currentUser = localStorage.getItem("activeCrewMember");
 
 // --- LOGOUT ---
-function logout() {
+window.logout = function() {
     localStorage.removeItem("activeCrewMember");
     window.location.href = "login.html"; // Kicks you completely out to the login page
-}
+};
 
-// --- ADD CANVAS MODULES ---
-function addModule(type) {
+// --- ADD CANVAS MODULES (Photos & Build Logs) ---
+// Note: "notes" was removed from here because Firebase handles them automatically!
+window.addModule = function(type) {
     const canvas = document.getElementById("canvas");
+    if (!canvas) return;
 
     const card = document.createElement("div");
     card.className = "canvas-card";
@@ -44,18 +54,7 @@ function addModule(type) {
         [ Click to Upload Photo ]
         </div>
         `;
-    }
-
-    if(type === "notes") {
-        title = "📝 Crew Note";
-        content = `
-        <p>
-        ${crewNotes[Math.floor(Math.random()*crewNotes.length)]}
-        </p>
-        `;
-    }
-
-    if(type === "build") {
+    } else if(type === "build") {
         title = "⚙️ Build Log";
         content = `
         <p>
@@ -63,6 +62,8 @@ function addModule(type) {
         ${buildLogs[Math.floor(Math.random()*buildLogs.length)]}
         </p>
         `;
+    } else {
+        return; // Exit if the type isn't matched
     }
 
     card.innerHTML = `
@@ -81,7 +82,94 @@ function addModule(type) {
     `;
 
     canvas.appendChild(card);
-}
+};
+
+// --- FIREBASE: SAVE NEW CREW NOTE ---
+document.addEventListener("DOMContentLoaded", () => {
+    const saveNoteBtn = document.getElementById("saveNoteBtn");
+    const crewNoteInput = document.getElementById("crewNoteInput");
+
+    if (saveNoteBtn && crewNoteInput) {
+        saveNoteBtn.addEventListener("click", async (e) => {
+            e.preventDefault();
+            const noteText = crewNoteInput.value.trim();
+
+            if (noteText === "") return;
+
+            try {
+                await addDoc(notesColRef, {
+                    text: noteText,
+                    author: currentUser || "Guest",
+                    timestamp: serverTimestamp()
+                });
+
+                crewNoteInput.value = "";
+                const countDisplay = document.getElementById("noteCount");
+                if (countDisplay) countDisplay.textContent = "0";
+
+                console.log("Transmission saved to Firestore successfully!");
+            } catch (error) {
+                console.error("Error saving transmission to Firestore: ", error);
+            }
+        });
+    }
+});
+
+// --- FIREBASE: REAL-TIME LISTENER FOR CREW NOTES ---
+const q = query(notesColRef, orderBy("timestamp", "desc"));
+
+onSnapshot(q, (snapshot) => {
+    const canvas = document.getElementById("canvas");
+    if (!canvas) return;
+
+    // Clear existing dynamic notes to prevent duplicate rendering
+    const existingDynamicNotes = canvas.querySelectorAll(".canvas-firebase-note");
+    existingDynamicNotes.forEach(note => note.remove());
+
+    snapshot.forEach((docSnap) => {
+        const noteData = docSnap.data();
+        const noteId = docSnap.id;
+
+        const card = document.createElement("div");
+        card.className = "canvas-card canvas-firebase-note";
+        
+        card.style.gridColumn = `span ${Math.floor(Math.random() * 2) + 1}`;
+        card.style.gridRow = `span ${Math.floor(Math.random() * 2) + 1}`;
+
+        card.innerHTML = `
+        <div class="card-header" style="display: flex; justify-content: space-between; align-items: center;">
+            <span>📝 Crew Note (${noteData.author || "Guest"})</span>
+            <span 
+                class="delete-note-btn" 
+                data-id="${noteId}"
+                style="cursor: pointer; color: #ff4d4d; font-weight: bold; font-size: 1.1rem;"
+            >
+            ×
+            </span>
+        </div>
+        <div class="card-body">
+            <p>${noteData.text}</p>
+        </div>
+        `;
+
+        canvas.appendChild(card);
+    });
+});
+
+// --- FIREBASE: DELETE A CREW NOTE ---
+document.addEventListener("click", async (e) => {
+    if (e.target.classList.contains("delete-note-btn")) {
+        const noteId = e.target.getAttribute("data-id");
+        if (!noteId) return;
+
+        try {
+            await deleteDoc(doc(db, "crewNotes", noteId));
+            console.log(`Document ${noteId} successfully purged from system.`);
+        } catch (error) {
+            console.error("Error purging document from Firestore: ", error);
+        }
+    }
+});
 
 // --- BREAKROOM CHAT ---
 const chatForm = document.getElementById("chatForm");
@@ -97,7 +185,6 @@ if(chatForm){
 
         const sender = currentUser || "Guest";
 
-        // Structured HTML insertion ensures safe rendering and keeps input focus from breaking
         const dynamicChatHTML = `
         <span class="chat-tag">[${sender}]:</span> ${message}
         <span class="divider">|</span>
@@ -107,7 +194,6 @@ if(chatForm){
 
         chatInput.value = "";
         
-        // Dynamic horizontal scroll panel track control
         const container = chatStream.parentElement;
         container.scrollLeft = container.scrollWidth;
     });
