@@ -72,7 +72,96 @@
     </div>
   </div>
 </div>
+<!-- DASHBOARD QUICK GLANCE WIDGET -->
+<div class="dash-project-widget">
+  <div class="widget-header">
+    <h3>Active Project Feed</h3>
+    <a href="projects.html" class="widget-link">Manage Projects →</a>
+  </div>
+  <ul id="dashNotesBulletList" class="dash-bullet-list">
+    <!-- Automated bullet points load here -->
+  </ul>
+</div>
 
+<style>
+  .dash-project-widget {
+    background: #121212;
+    border: 2px solid #ff5500;
+    border-radius: 6px;
+    padding: 16px;
+    color: #ffffff;
+    font-family: monospace;
+    margin-top: 15px;
+  }
+  .widget-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    border-bottom: 1px solid #222;
+    padding-bottom: 8px;
+    margin-bottom: 12px;
+  }
+  .widget-header h3 { margin: 0; font-size: 1.1rem; text-transform: uppercase; }
+  .widget-link {
+    color: #ff5500;
+    text-decoration: none;
+    font-size: 0.8rem;
+    font-weight: bold;
+    text-transform: uppercase;
+  }
+  .widget-link:hover { text-decoration: underline; }
+  .dash-bullet-list {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+  }
+  .dash-bullet-list li {
+    position: relative;
+    padding-left: 15px;
+    margin-bottom: 8px;
+    font-size: 0.9rem;
+    color: #ddd;
+    font-family: sans-serif;
+    line-height: 1.4;
+  }
+  .dash-bullet-list li::before {
+    content: "▪";
+    position: absolute;
+    left: 0;
+    color: #ff5500;
+  }
+  .dash-bullet-list .bullet-time {
+    font-family: monospace;
+    font-size: 0.75rem;
+    color: #666;
+    display: block;
+  }
+</style>
+
+<script>
+  document.addEventListener("DOMContentLoaded", () => {
+    const notes = JSON.parse(localStorage.getItem("canvas_project_notes")) || [];
+    const container = document.getElementById("dashNotesBulletList");
+    container.innerHTML = "";
+
+    if (notes.length === 0) {
+      container.innerHTML = "<li style='color:#444; list-style:none; padding-left:0;'>No active updates logged.</li>";
+      return;
+    }
+
+    // Grab only the top 3 most recent notes for the dashboard view
+    notes.slice(0, 3).forEach(note => {
+      const li = document.createElement("li");
+      // Truncate long notes so they stay as single line glances
+      const shortText = note.text.length > 60 ? note.text.substring(0, 60) + "..." : note.text;
+      li.innerHTML = `
+        <span class="bullet-time">${note.time}</span>
+        ${shortText}
+      `;
+      container.appendChild(li);
+    });
+  });
+</script>
 <style>
   .crew-logs-card {
     background: #121212;
